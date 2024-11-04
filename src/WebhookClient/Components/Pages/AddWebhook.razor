@@ -23,11 +23,17 @@
 
 @code {
     string? token;
+    string? type;
     string? message;
+    string? url;
 
     protected override void OnInitialized()
     {
         token = options.Value.Token;
+        var baseUrl = !string.IsNullOrEmpty(options.Value.SelfUrl)
+           ? options.Value.SelfUrl
+           : Nav.BaseUri;
+        Console.WriteLine(baseUrl);
     }
 
     private async Task RegisterAsync()
@@ -43,7 +49,6 @@
             : Nav.BaseUri;
         var granturl = $"{baseUrl}check";
         var url = $"{baseUrl}webhook-received";
-
         var payload = new WebhookSubscriptionRequest
         {
             Event = "OrderPaid",

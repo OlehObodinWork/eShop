@@ -4,9 +4,13 @@
 @inject NavigationManager Nav
 @code {
     [SupplyParameterFromQuery] public string? ReturnUrl { get; set; }
-    protected override void OnInitialized()
+    protected override void OnAfterRender(bool firstRender)
     {
-        var returnUrl = new Uri(ReturnUrl ?? "", UriKind.Relative);
-        Nav.NavigateTo(returnUrl.ToString(), replace: true);
+
+        if (firstRender) {
+            var returnUrl = new Uri(ReturnUrl ?? "", UriKind.Relative);
+            Nav.NavigateTo(returnUrl.ToString(), replace: true);
+        }
+       
     }
 }
