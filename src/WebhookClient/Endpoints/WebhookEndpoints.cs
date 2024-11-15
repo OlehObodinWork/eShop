@@ -52,6 +52,41 @@ public static class WebhookEndpoints
             return Results.BadRequest();
         });
 
+
+
+        // REVIEW: 11.11.2024 Disabled for now
+
+
+        //app.MapPost("/webhook-cj-listener", async (HttpContext context) =>
+        //{
+        //    var clientIp = context.Connection.RemoteIpAddress?.ToString();
+        //    Console.WriteLine("Client IP: " + clientIp);
+        //    Console.WriteLine(context.Request.Path);
+
+        //    // Read the request body
+        //    string requestBody;
+        //    using (StreamReader reader = new StreamReader(context.Request.Body))
+        //    {
+        //        requestBody = await reader.ReadToEndAsync();
+        //    }
+        //    // Log the raw request body
+        //    Console.WriteLine("Raw request body: " + requestBody);
+
+        //    // Additional processing can go here
+
+        //    return Results.Ok(true); // Ensure to return a response
+        //});
+
+
+
+
+
         return app;
     }
+}
+
+public class CallbackParams { 
+    public string? MessageId { get; set; } 
+    public string? Type { get; set; }
+    public object? Params { get; set; }
 }

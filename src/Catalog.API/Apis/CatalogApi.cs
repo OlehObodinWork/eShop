@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using System.Reflection;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Pgvector.EntityFrameworkCore;
 
 namespace eShop.Catalog.API;
@@ -29,7 +30,7 @@ public static class CatalogApi
         api.MapPut("/items", UpdateItem);
         api.MapPost("/items", CreateItem);
         api.MapDelete("/items/{id:int}", DeleteItemById);
-        api.MapPost("items/sync", SyncItem);
+        api.MapGet("items/sync", SyncItem);
         return app;
     }
 
@@ -315,6 +316,7 @@ public static class CatalogApi
         var result = await services.Utils.GetCatalogItemAsync(services.HttpClient, url, services.Logger, token);
         var item = services.Context.CatalogItems.SingleOrDefault(x => x.ProductSKU == SKU);
 
+
         //Type type = result.Item.GetType();
         //PropertyInfo[] properties = type.GetProperties();
 
@@ -360,11 +362,11 @@ public static class CatalogApi
             //    RestockThreshold = product.RestockThreshold,
             //    MaxStockThreshold = product.MaxStockThreshold
             //};
-            //item.Embedding = await services.CatalogAI.GetEmbeddingAsync(item);
+            result.Item.Embedding = await services.CatalogAI.GetEmbeddingAsync(item);
 
             services.Context.CatalogItems.Add(result.Item);
             await services.Context.SaveChangesAsync();
-            return TypedResults.Created($"/api/catalog/items/something");
+            return TypedResults.Created($"/api/catalog/{result.Item.Id}");
         }
         return TypedResults.Ok();
     }

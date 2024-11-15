@@ -2,25 +2,29 @@
 
 @inject HttpClient Http
 @inject NavigationManager NavManager
+@using Microsoft.Extensions.Configuration
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@inject IConfiguration Configuration
 
 <div style="height: 434px; overflow:auto;" tabindex="-1">
-    <FluentDataGrid style="height: 100%;" Loading="@(numResults == null)" ItemsProvider="foodRecallProvider" OnRowDoubleClick="@(()=>Console.WriteLine("Row double clicked!"))" Virtualize="true" ItemSize="46" GenerateHeader="GenerateHeaderOption.Sticky" TGridItem="FoodRecall">
-        <PropertyColumn Title="ID" Property="@(c => c!.Event_Id)" />
-        <PropertyColumn Property="@(c => c!.State)" Style="color: #af5f00 ;" />
+    <FluentDataGrid style="height: 100%;" ItemsProvider="foodRecallProvider" OnRowDoubleClick="@(()=>Console.WriteLine("Row double clicked!"))" Virtualize="true" ItemSize="46" GenerateHeader="GenerateHeaderOption.Sticky" TGridItem="CatalogItemTest">
+        <PropertyColumn Title="ID" Property="@(c => c!.Id)" />
+        @*   <PropertyColumn Property="@(c => c!.State)" Style="color: #af5f00 ;" />
         <PropertyColumn Property="@(c => c!.City)" />
         <PropertyColumn Title="Company" Property="@(c => c!.Recalling_Firm)" Tooltip="true" />
         <PropertyColumn Property="@(c => c!.Status)" />
         <TemplateColumn Title="Actions" Align="@Align.End">
             <FluentButton aria-label="Edit item"  OnClick="@(() => Console.WriteLine("Edit clicked"))" />
             <FluentButton aria-label="Delete item" OnClick="@(() => Console.WriteLine("Delete clicked"))" />
-        </TemplateColumn>
+        </TemplateColumn> *@
     </FluentDataGrid>
 </div>
 
-<p>Total: <strong>@numResults results found</strong></p>
+@* <p>Total: <strong>@numResults results found</strong></p> *@
 
 @code {
-    GridItemsProvider<FoodRecall> foodRecallProvider = default!;
+    GridItemsProvider<CatalogItemTest> foodRecallProvider = default!;
     int? numResults;
 
     protected override async Task OnInitializedAsync()
@@ -31,21 +35,24 @@
         // by the external API.
         foodRecallProvider = async req =>
         {
-            var url = NavManager.GetUriWithQueryParameters("https://api.fda.gov/food/enforcement.json", new Dictionary<string, object?>
-                        {
-                { "skip", req.StartIndex },
-                { "limit", req.Count },
-                        });
+            // var url = NavManager.GetUriWithQueryParameters("https://api.fda.gov/food/enforcement.json", new Dictionary<string, object?>
+            //             {
+            //     { "skip", req.StartIndex },
+            //     { "limit", req.Count },
+            //             });
+
+
+            var url = $"{Configuration["Endpoints:CatalogAPI"]}/api/catalog/items?api-version=1";
 
             var response = await Http.GetFromJsonAsync<FoodRecallQueryResult>(url, req.CancellationToken);
-
+            
             return GridItemsProviderResult.From(
-                items: response!.Results,
-                totalItemCount: response!.Meta.Results.Total);
+                items: response!.Data,
+                totalItemCount: response!.Count);
         };
 
         // Display the number of results just for information. This is completely separate from the grid.
-        numResults = (await Http.GetFromJsonAsync<FoodRecallQueryResult>("https://api.fda.gov/food/enforcement.json"))!.Meta.Results.Total;
+        numResults = (await Http.GetFromJsonAsync<FoodRecallQueryResult>("https://api.fda.gov/food/enforcement.json"))!.Count;
     }
 
     public class FoodRecall
@@ -59,8 +66,10 @@
 
     public class FoodRecallQueryResult
     {
-        public MetaData Meta { get; set; } = default!;
-        public List<FoodRecall> Results { get; set; } = new();
+
+        public int Count { get; set; }
+        public int PageSize { get; set; }
+        public List<CatalogItemTest> Data = new();
     }
 
     public class MetaData

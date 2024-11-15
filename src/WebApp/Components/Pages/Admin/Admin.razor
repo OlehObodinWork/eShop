@@ -50,11 +50,9 @@
 
     private async Task HandleOnMenuChanged(MenuChangeEventArgs args)
     {
-        Console.WriteLine(args.Id + args.Value);
         if (args.Id == "AddProduct")
         {
             await OpenDialogAsync(args.Value);
-            Console.WriteLine("LoL Dialog");
         }
     }
 
@@ -69,14 +67,17 @@
         DialogParameters parameters = new()
             {
                 Title = title,
-                PrimaryAction = "Add",
+               
                 PrimaryActionEnabled = false,
-                SecondaryAction = "Cancel",
+             
                 Width = "500px",
                 TrapFocus = _trapFocus,
                 Modal = _modal,
-                PreventScroll = true
+                PreventScroll = true,
+               
             };
+
+        
 
         IDialogReference dialog = await DialogService.ShowDialogAsync<AddProductDialog>(parameters);
         DialogResult? result = await dialog.Result;

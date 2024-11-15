@@ -1,11 +1,21 @@
 ﻿@using Microsoft.FluentUI.AspNetCore.Components
 @implements IDialogContentComponent
-
+@using System.Net.Http
+@using System.Text
+@inject HttpClient Http
+@using Microsoft.Extensions.Configuration 
+@inject IConfiguration Configuration
 <FluentMessageBarProvider Section="" MaxMessageCount="1" />
 
 @* <p>Your lastname is @Content.Lastname and you are @Content.Age years young </p> *@
 
 <FluentTextField @bind-Value="@SKU" Immediate="true">Product SKU</FluentTextField>
+
+<FluentDialogFooter>
+    <FluentButton Appearance="Appearance.Accent" OnClick="OnAddButtonClick">Add</FluentButton>
+    <FluentButton Appearance="Appearance.Neutral" OnClick="OnCancelButtonClick">Cancel</FluentButton>
+</FluentDialogFooter>
+
 @* <FluentTextField @bind-Value="@Content.Lastname">Your lastname:</FluentTextField>
 <FluentNumberField @bind-Value="@Content.Age">Your age:</FluentNumberField> *@
 @* @if (Dialog != null)
@@ -35,8 +45,18 @@
         } 
     }
 
-    private void ToggleDialogPrimaryActionButton(bool enable)
+    private async void OnAddButtonClick() {
+        //var content = new StringContent($"{{'SKU': '{SKU}', 'api-version': '1'}}", Encoding.UTF8, "application/json");
+        var url = $"{Configuration["Endpoints:CatalogAPI"]}/api/catalog/items/sync?SKU={SKU}&api-version=1";
+        var response = await Http.GetAsync(url);
+        var result = await response.Content.ReadAsStringAsync();
+        Console.WriteLine(result);
+        await Dialog!.CloseAsync();
+    }
+
+    private async void OnCancelButtonClick()
     {
+        await Dialog!.CloseAsync();
         // Dialog!.TogglePrimaryActionButton(enable);
     }
 }
