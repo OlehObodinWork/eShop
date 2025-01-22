@@ -1,0 +1,129 @@
+﻿@page "/edit-product"
+@layout AdminLayout
+@attribute [Authorize(Roles = "Administrator")]
+@inject HttpClient Http
+@rendermode InteractiveServer
+@inject NavigationManager NavManager
+@using Microsoft.Extensions.Configuration
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@inject IConfiguration Configuration
+@using Microsoft.FluentUI.AspNetCore.Components
+@using System.Text
+
+<h3>Product : @CatalogItem?.ProductNameEn</h3>
+
+
+@if (CatalogItem != null)
+{
+    <div class="product-edit">
+        <div class="product-edit-left">
+            <FluentTextField @bind-Value=CatalogItem.NameEN Label="Product name EN"></FluentTextField>
+
+            <FluentTextField @bind-Value=CatalogItem.NameDE Label="Product Name DE"></FluentTextField>
+
+
+            <p>
+                <FluentTextArea @bind-Value=CatalogItem.DescriptionEN Label="Description EN" />
+            </p>
+
+            <p>
+                <FluentTextArea @bind-Value=CatalogItem.DescriptionDE Label="Description DE" />
+            </p>
+
+
+            <FluentTextField @bind-Value=CatalogItem.PackingNameEN Label="Packing Name EN"></FluentTextField>
+
+
+            <FluentTextField @bind-Value=CatalogItem.PackingNameDE Label="Packing Name DE"></FluentTextField>
+
+
+
+            <FluentTextField @bind-Value=CatalogItem.ProductKeyEn Label="Product Key EN"></FluentTextField>
+
+
+            <FluentTextField @bind-Value=CatalogItem.ProductKenDE Label="Product key DE"></FluentTextField>
+
+
+
+            <FluentTextField @bind-Value=CatalogItem.CategoryNameEN Label="Category Name EN"></FluentTextField>
+
+
+            <FluentTextField @bind-Value=CatalogItem.CategoryNameDE Label="Category Name DE"></FluentTextField>
+        </div>
+        <div class="product-edit-right">
+            @if (CatalogItemVariants != null)
+            {
+                <div>
+                    @foreach (var group in CatalogItemVariants)
+                    {
+                        <div style="max-width: 120px;">
+                            <img style="display: block; max-width: 100%;" src="@(group.FirstOrDefault()?.VariantImage)" />
+                        </div>
+                        @foreach (var variant in group)
+                        {
+                            <div>
+                                @variant?.VariantKey
+                            </div>
+                            <div> @variant?.VariantSellPrice</div>
+                        }
+                    }
+                </div>
+            }
+        </div>
+    </div>
+}
+
+
+
+
+
+<FluentButton OnClick="OnSaveButtonClick"> Save </FluentButton>
+
+@code {
+
+    private IEnumerable<IGrouping<string, CatalogItemVariantDto>>? CatalogItemVariants { get; set; }
+
+    private CatalogItemDetailDto? CatalogItem { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Define the GridRowsDataProvider. Its job is to convert QuickGrid's GridRowsDataProviderRequest into a query against
+        // an arbitrary data soure. In this example, we need to translate query parameters into the particular URL format
+        // supported by the external JSON API. It's only possible to perform whatever sorting/filtering/etc is supported
+        // by the external API.
+
+        var baseUrl = new Uri(NavManager.Uri);
+
+        Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(baseUrl.Query).TryGetValue("id", out var id);
+
+        var url = $"{Configuration["Endpoints:CatalogAPI"]}/api/catalog/items/{id}?api-version=1";
+
+        var response = await Http.GetFromJsonAsync<CatalogItemDetailDto>(url);
+
+        CatalogItem = response;
+
+
+        CatalogItemVariants = CatalogItem?.CatalogItemVariants?.Where(item => item.VariantKey != null).GroupBy(item => item.VariantKey?.Split("-")[0] ?? "Unknown");
+        // Display the number of results just for information. This is completely separate from the grid.
+        // numResults = (await Http.GetFromJsonAsync<FoodRecallQueryResult>("https://api.fda.gov/food/enforcement.json"))!.Count;
+        }
+
+    public async void OnSaveButtonClick()
+    {
+        await UpdateProductAsync();
+    }
+
+    public async Task UpdateProductAsync()
+    {
+        var url = $"{Configuration["Endpoints:CatalogAPI"]}/api/catalog/items?api-version=1";
+        var json = JsonSerializer.Serialize(CatalogItem);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        var response = await Http.PutAsync(url, content);
+        // response.EnsureSuccessStatusCode();
+        var responseBody = await response.Content.ReadAsStringAsync();
+        Console.WriteLine(responseBody);
+    }
+
+
+}

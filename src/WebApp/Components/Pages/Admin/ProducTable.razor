@@ -1,5 +1,8 @@
-﻿@using Microsoft.FluentUI.AspNetCore.Components
-
+﻿
+@using Microsoft.FluentUI.AspNetCore.Components
+@page "/product-table"
+@rendermode InteractiveServer
+@layout AdminLayout
 @inject HttpClient Http
 @inject NavigationManager NavManager
 @using Microsoft.Extensions.Configuration
@@ -25,12 +28,13 @@
 
 @code {
     GridItemsProvider<CatalogItemTest> foodRecallProvider = default!;
-    int? numResults;
+   
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
+      
         // Define the GridRowsDataProvider. Its job is to convert QuickGrid's GridRowsDataProviderRequest into a query against
-        // an arbitrary data soure. In this example, we need to translate query parameters into the particular URL format
+        // an arbitrary data sourсe. In this example, we need to translate query parameters into the particular URL format
         // supported by the external JSON API. It's only possible to perform whatever sorting/filtering/etc is supported
         // by the external API.
         foodRecallProvider = async req =>
@@ -45,14 +49,14 @@
             var url = $"{Configuration["Endpoints:CatalogAPI"]}/api/catalog/items?api-version=1";
 
             var response = await Http.GetFromJsonAsync<FoodRecallQueryResult>(url, req.CancellationToken);
-            
+
             return GridItemsProviderResult.From(
                 items: response!.Data,
                 totalItemCount: response!.Count);
         };
 
         // Display the number of results just for information. This is completely separate from the grid.
-        numResults = (await Http.GetFromJsonAsync<FoodRecallQueryResult>("https://api.fda.gov/food/enforcement.json"))!.Count;
+        // numResults = (await Http.GetFromJsonAsync<FoodRecallQueryResult>("https://api.fda.gov/food/enforcement.json"))!.Count;
     }
 
     public class FoodRecall
@@ -69,7 +73,8 @@
 
         public int Count { get; set; }
         public int PageSize { get; set; }
-        public List<CatalogItemTest> Data = new();
+        
+        required public List<CatalogItemTest> Data { get; set; }
     }
 
     public class MetaData

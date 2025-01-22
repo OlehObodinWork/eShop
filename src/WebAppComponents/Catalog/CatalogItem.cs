@@ -21,6 +21,33 @@ public class CatalogItemTest
     public int Id { get; set; }
 }
 
+public class CatalogItemDetailDto
+{
+    public string? NameEN { get; set; }
+    public string? NameDE { get; set; }
+
+    public string? ProductNameEn { get; set; }
+    public string? DescriptionEN { get; set; }
+    public string? DescriptionDE { get; set; }
+    public string? PackingNameEN { get; set; }
+    public string? PackingNameDE { get; set; }
+    public string? ProductKeyEn { get; set; }
+    public string? ProductKenDE { get; set; }
+    public string? CategoryNameEN { get; set; }
+    public string? CategoryNameDE { get; set; }
+
+    public List<CatalogItemVariantDto>? CatalogItemVariants { get; set; }
+}
+
+
+public class CatalogItemVariantDto
+{
+    public string? VariantImage { get; set; }
+
+    public string? VariantKey { get; set; }
+    public int? VariantSellPrice { get; set; }
+}
+
 public record CatalogItemRecord(int Id, string Name, [property: JsonPropertyName("productNameEn")] string OriginName, string NameEN, string NameDE, [property: JsonPropertyName("description")] string Description, string DescriptionDE, string DescriptionEN, [property: JsonPropertyName("productWeight")] string ProductWeight, [property: JsonPropertyName("productType")] string ProducctType, [property: JsonPropertyName("categoryId")] string CategoryId, [property: JsonPropertyName("categoryName")] string CategoryNameEN, string CategoryNameDE, [property: JsonPropertyName("productSku")] string ProductSKU, [property: JsonPropertyName("productKeyEn")] string ProductKeyEN, string ProductKenDE, decimal Price, [property: JsonPropertyName("sellPrice")] string OriginPrice, [property: JsonPropertyName("suggestSellPrice")] string SuggestSellPrice, int ListedNum, string PictureFileName, ICollection<OriginalImages> OriginalImages, ICollection<EnchancedImages> EnhancedImages, List<CatalogFeature> CatalogFeatures, ICollection<CatalogItemVariant> CatalogItemVariants, [property: JsonPropertyName("packingWeight")] string PackingWeight, [property: JsonPropertyName("packingNameEn")] string PackingNameEN, string PackingNameDE, string PackingNameSetEN, string PackingNameSetDE, int CatalogTypeId, int CatalogBrandId, int AvailableStock, int RestockThreshold, int MaxStockThreshold, bool OnReorder);
 
 public record OriginalImages(int Id, string Src, int CatalogItemId, CatalogItem CatalogItem);
