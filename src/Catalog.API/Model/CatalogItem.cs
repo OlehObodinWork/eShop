@@ -98,6 +98,7 @@ public class CatalogItem
 
     public List<CatalogKit> CatalogKits { get; set; }
 
+    
     public ICollection<CatalogItemVariant> CatalogItemVariants { get; } = new List<CatalogItemVariant>();
 
 

@@ -57,6 +57,8 @@ namespace Catalog.API.Model
         public string VariantStandart { get; set; }
 
         public int CatalogItemId { get; set; } // Required foreign key property
+
+        [JsonIgnore]
         public CatalogItem CatalogItem { get; set; } = null!;
 
         public string VarianKeySizeAjusments()

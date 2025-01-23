@@ -70,7 +70,7 @@ public static class CatalogApi
             return TypedResults.BadRequest("Id is not valid.");
         }
 
-        var item = await services.Context.CatalogItems.SingleOrDefaultAsync(ci => ci.Id == id);
+        var item = await services.Context.CatalogItems.Include((ci) => ci.CatalogItemVariants).SingleOrDefaultAsync(ci => ci.Id == id);
 
         if (item == null)
         {

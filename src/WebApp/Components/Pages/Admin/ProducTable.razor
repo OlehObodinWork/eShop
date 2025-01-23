@@ -11,7 +11,7 @@
 @inject IConfiguration Configuration
 
 <div style="height: 434px; overflow:auto;" tabindex="-1">
-    <FluentDataGrid style="height: 100%;" ItemsProvider="foodRecallProvider" OnRowDoubleClick="@(()=>Console.WriteLine("Row double clicked!"))" Virtualize="true" ItemSize="46" GenerateHeader="GenerateHeaderOption.Sticky" TGridItem="CatalogItemTest">
+    <FluentDataGrid style="height: 100%;" ItemsProvider="foodRecallProvider" OnRowClick="@(OnRowClick)" Virtualize="true" ItemSize="46" GenerateHeader="GenerateHeaderOption.Sticky" TGridItem="CatalogItemTest">
         <PropertyColumn Title="ID" Property="@(c => c!.Id)" />
         @*   <PropertyColumn Property="@(c => c!.State)" Style="color: #af5f00 ;" />
         <PropertyColumn Property="@(c => c!.City)" />
@@ -28,11 +28,11 @@
 
 @code {
     GridItemsProvider<CatalogItemTest> foodRecallProvider = default!;
-   
+
 
     protected override void OnInitialized()
     {
-      
+
         // Define the GridRowsDataProvider. Its job is to convert QuickGrid's GridRowsDataProviderRequest into a query against
         // an arbitrary data sourсe. In this example, we need to translate query parameters into the particular URL format
         // supported by the external JSON API. It's only possible to perform whatever sorting/filtering/etc is supported
@@ -57,6 +57,17 @@
 
         // Display the number of results just for information. This is completely separate from the grid.
         // numResults = (await Http.GetFromJsonAsync<FoodRecallQueryResult>("https://api.fda.gov/food/enforcement.json"))!.Count;
+    }
+
+    public void OnRowClick(FluentDataGridRow<CatalogItemTest> context)
+    {
+
+        if (context.Item != null) {
+            NavManager.NavigateTo($"/edit-product?id={context.Item.Id}");
+        } else
+        {
+            Console.WriteLine("Item is null");    
+        }
     }
 
     public class FoodRecall
