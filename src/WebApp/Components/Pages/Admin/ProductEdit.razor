@@ -16,62 +16,87 @@
 
 @if (CatalogItem != null)
 {
-    <div class="product-edit">
-        <div class="product-edit-left">
-            <FluentTextField @bind-Value=CatalogItem.NameEN Label="Product name EN"></FluentTextField>
-
-            <FluentTextField @bind-Value=CatalogItem.NameDE Label="Product Name DE"></FluentTextField>
 
 
-            <p>
-                <FluentTextArea @bind-Value=CatalogItem.DescriptionEN Label="Description EN" />
-            </p>
-
-            <p>
-                <FluentTextArea @bind-Value=CatalogItem.DescriptionDE Label="Description DE" />
-            </p>
-
-
-            <FluentTextField @bind-Value=CatalogItem.PackingNameEN Label="Packing Name EN"></FluentTextField>
-
-
-            <FluentTextField @bind-Value=CatalogItem.PackingNameDE Label="Packing Name DE"></FluentTextField>
-
-
-
-            <FluentTextField @bind-Value=CatalogItem.ProductKeyEn Label="Product Key EN"></FluentTextField>
-
-
-            <FluentTextField @bind-Value=CatalogItem.ProductKenDE Label="Product key DE"></FluentTextField>
-
-
-
-            <FluentTextField @bind-Value=CatalogItem.CategoryNameEN Label="Category Name EN"></FluentTextField>
-
-
-            <FluentTextField @bind-Value=CatalogItem.CategoryNameDE Label="Category Name DE"></FluentTextField>
-        </div>
-        <div class="product-edit-right">
-            @if (CatalogItemVariants != null)
-            {
-                <div>
-                    @foreach (var group in CatalogItemVariants)
-                    {
-                        <div style="max-width: 120px;">
-                            <img style="display: block; max-width: 100%;" src="@(group.FirstOrDefault()?.VariantImage)" />
-                        </div>
-                        @foreach (var variant in group)
+    <FluentGrid Spacing="@Spacing" OnBreakpointEnter="@OnBreakpointEnterHandler" AdaptiveRendering="true" Justify="@Justification" Style=" ">
+        <FluentGridItem xs="12" sm="8">
+            <div class="card">
+                @if (CatalogItemVariants != null)
+                {
+                    <div>
+                        @foreach (var group in CatalogItemVariants)
                         {
-                            <div>
-                                @variant?.VariantKey
-                            </div>
-                            <div> @variant?.VariantSellPrice</div>
+                            <FluentGrid Spacing="@Spacing" OnBreakpointEnter="@OnBreakpointEnterHandler" AdaptiveRendering="true" Justify="@Justification" Style=" ">
+                                <FluentGridItem xs="12" sm="3">
+                                   
+                                        <img style="display: block; max-width: 100%;" src="@(group.FirstOrDefault()?.VariantImage)" />
+                                    
+                                </FluentGridItem>
+                                <FluentGridItem xs="12" sm="9">
+                                    <div class="card-list-items">
+                                        @foreach (var variant in group)
+                                        {
+                                            <div>
+                                                <div>
+                                                    @variant?.VariantKey
+                                                </div>
+                                                <div> @variant?.VariantSellPrice</div>
+                                            </div>
+                                        }
+                                    </div>
+                                </FluentGridItem>
+                            </FluentGrid>
+
+
                         }
-                    }
-                </div>
-            }
-        </div>
-    </div>
+                    </div>
+                }
+            </div>
+        </FluentGridItem>
+
+        <FluentGridItem xs="12" sm="4">
+            <div class="card">
+                <FluentTextField @bind-Value=CatalogItem.NameEN Label="Product name EN"></FluentTextField>
+
+                <FluentTextField @bind-Value=CatalogItem.NameDE Label="Product Name DE"></FluentTextField>
+
+
+                <p>
+                    <FluentTextArea @bind-Value=CatalogItem.DescriptionEN Label="Description EN" />
+                </p>
+
+                <p>
+                    <FluentTextArea @bind-Value=CatalogItem.DescriptionDE Label="Description DE" />
+                </p>
+
+
+                <FluentTextField @bind-Value=CatalogItem.PackingNameEN Label="Packing Name EN"></FluentTextField>
+
+
+                <FluentTextField @bind-Value=CatalogItem.PackingNameDE Label="Packing Name DE"></FluentTextField>
+
+
+
+                <FluentTextField @bind-Value=CatalogItem.ProductKeyEn Label="Product Key EN"></FluentTextField>
+
+
+                <FluentTextField @bind-Value=CatalogItem.ProductKenDE Label="Product key DE"></FluentTextField>
+
+
+
+                <FluentTextField @bind-Value=CatalogItem.CategoryNameEN Label="Category Name EN"></FluentTextField>
+
+
+                <FluentTextField @bind-Value=CatalogItem.CategoryNameDE Label="Category Name DE"></FluentTextField>
+            </div>
+        </FluentGridItem>
+
+    </FluentGrid>
+
+
+
+
+
 }
 
 
@@ -85,6 +110,14 @@
     private IEnumerable<IGrouping<string, CatalogItemVariantDto>>? CatalogItemVariants { get; set; }
 
     private CatalogItemDetailDto? CatalogItem { get; set; }
+
+    JustifyContent Justification = JustifyContent.FlexStart;
+    int Spacing = 3;
+
+    void OnBreakpointEnterHandler(GridItemSize size)
+    {
+        Console.WriteLine($"Page Size: {size}");
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -107,7 +140,7 @@
         CatalogItemVariants = CatalogItem?.CatalogItemVariants?.Where(item => item.VariantKey != null).GroupBy(item => item.VariantKey?.Split("-")[0] ?? "Unknown");
         // Display the number of results just for information. This is completely separate from the grid.
         // numResults = (await Http.GetFromJsonAsync<FoodRecallQueryResult>("https://api.fda.gov/food/enforcement.json"))!.Count;
-        }
+    }
 
     public async void OnSaveButtonClick()
     {
