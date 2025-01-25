@@ -27,12 +27,12 @@
                         @foreach (var group in CatalogItemVariants)
                         {
                             <FluentGrid Spacing="@Spacing" OnBreakpointEnter="@OnBreakpointEnterHandler" AdaptiveRendering="true" Justify="@Justification" Style=" ">
-                                <FluentGridItem xs="12" sm="3">
-                                   
-                                        <img style="display: block; max-width: 100%;" src="@(group.FirstOrDefault()?.VariantImage)" />
-                                    
+                                <FluentGridItem xs="12" sm="1">
+
+                                    <img style="display: block; max-width: 100%;" src="@(group.FirstOrDefault()?.VariantImage)" />
+
                                 </FluentGridItem>
-                                <FluentGridItem xs="12" sm="9">
+                                <FluentGridItem xs="12" sm="11">
                                     <div class="card-list-items">
                                         @foreach (var variant in group)
                                         {
@@ -56,50 +56,54 @@
 
         <FluentGridItem xs="12" sm="4">
             <div class="card">
-                <FluentTextField @bind-Value=CatalogItem.NameEN Label="Product name EN"></FluentTextField>
-
-                <FluentTextField @bind-Value=CatalogItem.NameDE Label="Product Name DE"></FluentTextField>
-
+                <FluentGrid Spacing="@Spacing" OnBreakpointEnter="@OnBreakpointEnterHandler" AdaptiveRendering="true" Justify="@Justification" Style=" ">
+                    <FluentGridItem xs="12" sm="6">
+                        <FluentTextField @bind-Value=CatalogItem.NameEN Label="Product name EN"></FluentTextField>
+                    </FluentGridItem>
+                    <FluentGridItem xs="12" sm="6">
+                        <FluentTextField @bind-Value=CatalogItem.NameDE Label="Product Name DE"></FluentTextField>
+                    </FluentGridItem>
+                </FluentGrid>
 
                 <p>
-                    <FluentTextArea @bind-Value=CatalogItem.DescriptionEN Label="Description EN" />
+                    <FluentTextArea style="width: 100%" @bind-Value=CatalogItem.DescriptionEN Label="Description EN" />
                 </p>
 
                 <p>
-                    <FluentTextArea @bind-Value=CatalogItem.DescriptionDE Label="Description DE" />
+                    <FluentTextArea style="width: 100%" @bind-Value=CatalogItem.DescriptionDE Label="Description DE" />
                 </p>
 
+                <FluentGrid Spacing="@Spacing" OnBreakpointEnter="@OnBreakpointEnterHandler" AdaptiveRendering="true" Justify="@Justification" Style=" ">
+                    <FluentGridItem xs="12" sm="6">
+                        <FluentTextField @bind-Value=CatalogItem.PackingNameEN Label="Packing Name EN"></FluentTextField>
 
-                <FluentTextField @bind-Value=CatalogItem.PackingNameEN Label="Packing Name EN"></FluentTextField>
+                    </FluentGridItem>
+                    <FluentGridItem xs="12" sm="6">
+                        <FluentTextField @bind-Value=CatalogItem.PackingNameDE Label="Packing Name DE"></FluentTextField>
+                    </FluentGridItem>
+
+                    <FluentGridItem xs="12" sm="6">
+                        <FluentTextField @bind-Value=CatalogItem.ProductKeyEn Label="Product Key EN"></FluentTextField>
+
+                    </FluentGridItem>
+                    <FluentGridItem xs="12" sm="6">
+                        <FluentTextField @bind-Value=CatalogItem.ProductKenDE Label="Product key DE"></FluentTextField>
+                    </FluentGridItem>
 
 
-                <FluentTextField @bind-Value=CatalogItem.PackingNameDE Label="Packing Name DE"></FluentTextField>
+                    <FluentGridItem xs="12" sm="6">
+                        <FluentTextField @bind-Value=CatalogItem.CategoryNameEN Label="Category Name EN"></FluentTextField>
 
-
-
-                <FluentTextField @bind-Value=CatalogItem.ProductKeyEn Label="Product Key EN"></FluentTextField>
-
-
-                <FluentTextField @bind-Value=CatalogItem.ProductKenDE Label="Product key DE"></FluentTextField>
-
-
-
-                <FluentTextField @bind-Value=CatalogItem.CategoryNameEN Label="Category Name EN"></FluentTextField>
-
-
-                <FluentTextField @bind-Value=CatalogItem.CategoryNameDE Label="Category Name DE"></FluentTextField>
+                    </FluentGridItem>
+                    <FluentGridItem xs="12" sm="6">
+                        <FluentTextField @bind-Value=CatalogItem.CategoryNameDE Label="Category Name DE"></FluentTextField>
+                    </FluentGridItem>
+                </FluentGrid>
             </div>
         </FluentGridItem>
 
     </FluentGrid>
-
-
-
-
-
 }
-
-
 
 
 
