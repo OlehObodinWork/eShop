@@ -11,7 +11,6 @@
 @using Microsoft.FluentUI.AspNetCore.Components
 @using System.Text
 
-<h3>Product : @CatalogItem?.ProductNameEn</h3>
 
 
 @if (CatalogItem != null)
@@ -20,6 +19,9 @@
 
     <FluentGrid Spacing="@Spacing" OnBreakpointEnter="@OnBreakpointEnterHandler" AdaptiveRendering="true" Justify="@Justification" Style=" ">
         <FluentGridItem xs="12" sm="8">
+            <h3>Product : @CatalogItem?.ProductNameEn</h3>
+            <h5> Original Description:</h5>
+            <p>@CatalogItem?.Description</p>
             <div class="card">
                 @if (CatalogItemVariants != null)
                 {
@@ -27,20 +29,30 @@
                         @foreach (var group in CatalogItemVariants)
                         {
                             <FluentGrid Spacing="@Spacing" OnBreakpointEnter="@OnBreakpointEnterHandler" AdaptiveRendering="true" Justify="@Justification" Style=" ">
-                                <FluentGridItem xs="12" sm="1">
+                                <FluentGridItem xs="12" sm="2">
 
                                     <img style="display: block; max-width: 100%;" src="@(group.FirstOrDefault()?.VariantImage)" />
+                                    @group.FirstOrDefault()?.VariantKey!.Split("-")[0]
+                                </FluentGridItem>
+
+                                <FluentGridItem xs="12" sm="2">
+                                    <FluentTextField ValueChanged=@((string value) => KeyNameChanged(value, group, "EN")) Placeholder="Key Name EN"></FluentTextField>
+                                    <FluentTextField ValueChanged=@((string value) => KeyNameChanged(value, group, "DE")) Placeholder="Key Name DE"></FluentTextField>
 
                                 </FluentGridItem>
-                                <FluentGridItem xs="12" sm="11">
+                                <FluentGridItem xs="12" sm="8">
                                     <div class="card-list-items">
                                         @foreach (var variant in group)
                                         {
                                             <div>
                                                 <div>
-                                                    @variant?.VariantKey
+                                                    @variant?.VarianKeyEnAdjusted!.Split("-")[1]
+
+                                                    @*  <FluentTextField @bind-Value=@variant!.VariantKeyValue Label="Variant Value"></FluentTextField> *@
+                                                    @*  <FluentTextField @bind-Value=@variant!.VariantKeyDE Label="Variant Key DE"></FluentTextField>  *@
+
                                                 </div>
-                                                <div> @variant?.VariantSellPrice</div>
+                                                <div> @variant?.VariantFinallPrice?.ToString("C")</div>
                                             </div>
                                         }
                                     </div>
@@ -99,6 +111,7 @@
                         <FluentTextField @bind-Value=CatalogItem.CategoryNameDE Label="Category Name DE"></FluentTextField>
                     </FluentGridItem>
                 </FluentGrid>
+                <FluentButton OnClick="OnSaveButtonClick"> Save </FluentButton>
             </div>
         </FluentGridItem>
 
@@ -107,7 +120,7 @@
 
 
 
-<FluentButton OnClick="OnSaveButtonClick"> Save </FluentButton>
+
 
 @code {
 
@@ -115,12 +128,25 @@
 
     private CatalogItemDetailDto? CatalogItem { get; set; }
 
+    private CatalogItemVariantDto? CatalogItemVariant { get; set; }
+
     JustifyContent Justification = JustifyContent.FlexStart;
     int Spacing = 3;
 
     void OnBreakpointEnterHandler(GridItemSize size)
     {
         Console.WriteLine($"Page Size: {size}");
+    }
+
+    public void KeyNameChanged(string value, IGrouping<string, CatalogItemVariantDto> group, string lang)
+    {
+        Console.WriteLine(value);
+        foreach (var variant in group)
+        {
+            if (lang == "EN") variant.VariantKeyNameEN = value;
+            if (lang == "DE") variant.VariantKeyNameDE = value;
+        }
+      
     }
 
     protected override async Task OnInitializedAsync()

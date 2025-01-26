@@ -337,6 +337,8 @@ public static class CatalogApi
             foreach (var variant in result.Variants)
             {
                 variant.CatalogItemId = result.Item.Id;
+                variant.VarianPriceAdjustments();
+                variant.VarianKeyAdjusted();
                 result.Item.CatalogItemVariants.Add(variant);
                 services.Context.CatalogItemVariants.Add(variant);
             }

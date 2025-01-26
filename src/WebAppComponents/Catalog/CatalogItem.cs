@@ -25,7 +25,7 @@ public class CatalogItemDetailDto
 {
     public string? NameEN { get; set; }
     public string? NameDE { get; set; }
-
+    public string? Description { get; set; }
     public string? ProductNameEn { get; set; }
     public string? DescriptionEN { get; set; }
     public string? DescriptionDE { get; set; }
@@ -42,10 +42,24 @@ public class CatalogItemDetailDto
 
 public class CatalogItemVariantDto
 {
+
     public string? VariantImage { get; set; }
 
     public string? VariantKey { get; set; }
+
+    public string? VarianKeyEnAdjusted { get; set; }
+
+    public decimal? VariantFinallPrice { get; set; }
+    public string? VariantKeyDE { get; set; }
     public decimal? VariantSellPrice { get; set; }
+
+    public string? VariantKeyNameEN { get; set; }
+
+    public string? VariantKeyNameDE { get; set; }
+
+    public string? VariantKeyValue { get; set; }
+
+
 }
 
 public record CatalogItemRecord(int Id, string Name, [property: JsonPropertyName("productNameEn")] string OriginName, string NameEN, string NameDE, [property: JsonPropertyName("description")] string Description, string DescriptionDE, string DescriptionEN, [property: JsonPropertyName("productWeight")] string ProductWeight, [property: JsonPropertyName("productType")] string ProducctType, [property: JsonPropertyName("categoryId")] string CategoryId, [property: JsonPropertyName("categoryName")] string CategoryNameEN, string CategoryNameDE, [property: JsonPropertyName("productSku")] string ProductSKU, [property: JsonPropertyName("productKeyEn")] string ProductKeyEN, string ProductKenDE, decimal Price, [property: JsonPropertyName("sellPrice")] string OriginPrice, [property: JsonPropertyName("suggestSellPrice")] string SuggestSellPrice, int ListedNum, string PictureFileName, ICollection<OriginalImages> OriginalImages, ICollection<EnchancedImages> EnhancedImages, List<CatalogFeature> CatalogFeatures, ICollection<CatalogItemVariant> CatalogItemVariants, [property: JsonPropertyName("packingWeight")] string PackingWeight, [property: JsonPropertyName("packingNameEn")] string PackingNameEN, string PackingNameDE, string PackingNameSetEN, string PackingNameSetDE, int CatalogTypeId, int CatalogBrandId, int AvailableStock, int RestockThreshold, int MaxStockThreshold, bool OnReorder);

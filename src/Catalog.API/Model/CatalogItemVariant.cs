@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using Google.Protobuf.WellKnownTypes;
 
 namespace Catalog.API.Model
 {
@@ -32,6 +33,8 @@ namespace Catalog.API.Model
         [JsonPropertyName("variantKey")]
         public string VariantKeyEN { get; set; }
 
+        public string VarianKeyEnAdjusted { get; set; }
+
         public string VariantKeyDE { get; set; }
 
         [JsonPropertyName("variantLength")]
@@ -56,14 +59,63 @@ namespace Catalog.API.Model
         [JsonPropertyName("variantStandard")]
         public string VariantStandart { get; set; }
 
+
+        public decimal VariantFinallPrice { get; set; }
+
         public int CatalogItemId { get; set; } // Required foreign key property
 
         [JsonIgnore]
         public CatalogItem CatalogItem { get; set; } = null!;
 
-        public string VarianKeySizeAjusments()
+
+
+        public void VarianPriceAdjustments()
         {
-            return "";
+            var maxMarginPercent = 333.333m;
+
+            var currentMarginPercent = VariantSellPrice / VariantPrice * 100;
+
+            if (currentMarginPercent > maxMarginPercent)
+            {
+                VariantFinallPrice = Math.Round(VariantPrice * maxMarginPercent / 100, 2);
+            } else
+            {
+                VariantFinallPrice = VariantSellPrice;
+            }
+        }
+
+        public void VarianKeyAdjusted()
+        {
+            var keys = VariantKeyEN.Split('-');
+
+            int shoeSize;
+
+            var isShoeSize = int.TryParse(keys[1], out shoeSize);
+
+            if (isShoeSize)
+            {
+                shoeSize -= 2;
+
+                VarianKeyEnAdjusted = $"{keys[0]}-{shoeSize}";
+                VariantKeyDE = $"{keys[0]}-{shoeSize}";
+            } else
+            {
+                string adjustedSize = keys[1] switch
+                {
+                    "6XL" => "4XL",
+                    "5XL" => "3XL",
+                    "4XL" => "2XL",
+                    "3XL" => "XL",
+                    "2XL" => "L",
+                    "XL" => "M",
+                    "L" => "S",
+                    "M" => "XS",
+                    "S" => "XS", // Adjusting S to XS since two sizes lower from S would be beyond XS.
+                    _ => keys[1] // Keeping XS as XS, since there is no smaller size.
+                };
+                VarianKeyEnAdjusted = $"{keys[0]}-{adjustedSize}";
+                VariantKeyDE = $"{keys[0]}-{adjustedSize}";
+            }
         }
 
     }
