@@ -27,6 +27,8 @@ public class CatalogContext : DbContext
 
     public DbSet<CatalogKit> CatalogKits { get; set; }
 
+    public DbSet<CatalogFeatureValues> CatalogFeatureValues { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         builder.HasPostgresExtension("vector");
