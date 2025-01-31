@@ -1,7 +1,6 @@
-﻿using System.Reflection;
-using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Pgvector.EntityFrameworkCore;
-using static Google.Protobuf.Compiler.CodeGeneratorResponse.Types;
+
 
 namespace eShop.Catalog.API;
 
@@ -24,12 +23,14 @@ public static class CatalogApi
         // Routes for resolving catalog items by type and brand.
         api.MapGet("/items/type/{typeId}/brand/{brandId?}", GetItemsByBrandAndTypeId);
         api.MapGet("/items/type/all/brand/{brandId:int?}", GetItemsByBrandId);
+        api.MapGet("/catalog-features-values/{catalogId:int?}", GetFeatureByCatalogId);
         //api.MapGet("/catalogtypes", async (CatalogContext context) => await context.CatalogTypes.OrderBy(x => x.Type).ToListAsync());
         //api.MapGet("/catalogbrands", async (CatalogContext context) => await context.CatalogBrands.OrderBy(x => x.Brand).ToListAsync());
 
         // Routes for modifying catalog items.
         api.MapPut("/items", UpdateItem);
         api.MapPost("/items", CreateItem);
+        api.MapPost("/features", CreateFeature);
         api.MapDelete("/items/{id:int}", DeleteItemById);
         api.MapGet("items/sync", SyncItem);
         return app;
@@ -410,23 +411,7 @@ public static class CatalogApi
         return TypedResults.Created($"/api/catalog/features/{feature.Id}");
     }
 
-    public static async Task<Created> GetFeatures(
-       [AsParameters] CatalogServices services,
-       CatalogFeature feature)
-    {
-        //var newFeature = new CatalogFeature
-        //{
-        //    TitleEN = feature.TitleEN,
-        //    TitleDE = feature.TitleDE,
-        //    Icon = feature.Icon,
-        //};
-
-        services.Context.CatalogFeatures.Add(feature);
-        await services.Context.SaveChangesAsync();
-
-        return TypedResults.Created($"/api/catalog/features/{feature.Id}");
-    }
-
+   
     public static async Task<Results<Ok<PaginatedItems<CatalogFeature>>, BadRequest<string>>> GetAllFeatures(
     [AsParameters] PaginationRequest paginationRequest,
     [AsParameters] CatalogServices services)
@@ -446,15 +431,31 @@ public static class CatalogApi
         return TypedResults.Ok(new PaginatedItems<CatalogFeature>(pageIndex, pageSize, totalItems, featuresOnPage));
     }
 
-    //public static async  Task<Ok> AddFeatureToCatalogItem([AsParameters] CatalogServices services, CatalogFeatureValues catalogFeatureValue)
-    //{
-    //    //var newCatalogFeatureValue = new CatalogFeatureValues
-    //    //{
-    //    //    CatalogFeatureId = catalogFeatureValue.CatalogFeatureId,
-    //    //    CatalogItemId = catalogFeatureValue.FeatureName,
-    //    //}
-    //    //services.Context.CatalogFeaturesValues.Add(catalogFeatureValue);
-    //    await services.Context.SaveChangesAsync();
-    //    return TypedResults.Ok();
-    //}
+    public static async Task<Ok> AddFeatureToCatalogItem([AsParameters] CatalogServices services, CatalogFeatureValue catalogFeatureValue)
+    {
+        //var newCatalogFeatureValue = new CatalogFeatureValues
+        //{
+        //    CatalogFeatureId = catalogFeatureValue.CatalogFeatureId,
+        //    CatalogItemId = catalogFeatureValue.FeatureName,
+        //}
+        services.Context.CatalogFeatureValues.Add(catalogFeatureValue);
+        await services.Context.SaveChangesAsync();
+        return TypedResults.Ok();
+    }
+
+    public static async Task<Results<Ok<List<CatalogFeatureValue>>, NotFound, BadRequest<string>>> GetFeaturesByCatalogId(
+        [AsParameters] CatalogServices services,
+        int id)
+    {
+        var features = await services.Context.CatalogFeatureValues
+            .Where(cf => id == cf.CatalogItemId).ToListAsync();
+
+        if (features == null)
+        {
+            return TypedResults.NotFound();
+        }
+
+        return TypedResults.Ok(features);
+    }
+
 }
