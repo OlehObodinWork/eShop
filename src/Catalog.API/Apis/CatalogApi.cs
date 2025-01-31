@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Pgvector.EntityFrameworkCore;
+using static Google.Protobuf.Compiler.CodeGeneratorResponse.Types;
 
 namespace eShop.Catalog.API;
 
@@ -390,4 +391,70 @@ public static class CatalogApi
 
     public static string GetFullPath(string contentRootPath, string pictureFileName) =>
         Path.Combine(contentRootPath, "Pics", pictureFileName);
+
+
+    public static async Task<Created> CreateFeature(
+        [AsParameters] CatalogServices services,
+        CatalogFeature feature)
+    {
+        var newFeature = new CatalogFeature
+        {
+            TitleEN = feature.TitleEN,
+            TitleDE = feature.TitleDE,
+            Icon = feature.Icon,
+        };
+
+        services.Context.CatalogFeatures.Add(feature);
+        await services.Context.SaveChangesAsync();
+
+        return TypedResults.Created($"/api/catalog/features/{feature.Id}");
+    }
+
+    public static async Task<Created> GetFeatures(
+       [AsParameters] CatalogServices services,
+       CatalogFeature feature)
+    {
+        //var newFeature = new CatalogFeature
+        //{
+        //    TitleEN = feature.TitleEN,
+        //    TitleDE = feature.TitleDE,
+        //    Icon = feature.Icon,
+        //};
+
+        services.Context.CatalogFeatures.Add(feature);
+        await services.Context.SaveChangesAsync();
+
+        return TypedResults.Created($"/api/catalog/features/{feature.Id}");
+    }
+
+    public static async Task<Results<Ok<PaginatedItems<CatalogFeature>>, BadRequest<string>>> GetAllFeatures(
+    [AsParameters] PaginationRequest paginationRequest,
+    [AsParameters] CatalogServices services)
+    {
+        var pageSize = paginationRequest.PageSize;
+        var pageIndex = paginationRequest.PageIndex;
+
+        var totalItems = await services.Context.CatalogFeatures
+            .LongCountAsync();
+
+        var featuresOnPage = await services.Context.CatalogFeatures
+            .OrderBy(c => c.TitleEN)
+            .Skip(pageSize * pageIndex)
+            .Take(pageSize)
+            .ToListAsync();
+
+        return TypedResults.Ok(new PaginatedItems<CatalogFeature>(pageIndex, pageSize, totalItems, featuresOnPage));
+    }
+
+    //public static async  Task<Ok> AddFeatureToCatalogItem([AsParameters] CatalogServices services, CatalogFeatureValues catalogFeatureValue)
+    //{
+    //    //var newCatalogFeatureValue = new CatalogFeatureValues
+    //    //{
+    //    //    CatalogFeatureId = catalogFeatureValue.CatalogFeatureId,
+    //    //    CatalogItemId = catalogFeatureValue.FeatureName,
+    //    //}
+    //    //services.Context.CatalogFeaturesValues.Add(catalogFeatureValue);
+    //    await services.Context.SaveChangesAsync();
+    //    return TypedResults.Ok();
+    //}
 }

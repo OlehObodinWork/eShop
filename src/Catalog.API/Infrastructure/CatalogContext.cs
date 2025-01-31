@@ -27,7 +27,7 @@ public class CatalogContext : DbContext
 
     public DbSet<CatalogKit> CatalogKits { get; set; }
 
-    public DbSet<CatalogFeatureValues> CatalogFeatureValues { get; set; }
+    public DbSet<CatalogFeatureValue> CatalogFeatureValues { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

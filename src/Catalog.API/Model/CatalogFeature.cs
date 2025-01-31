@@ -1,6 +1,6 @@
-﻿using static Google.Protobuf.Compiler.CodeGeneratorResponse.Types;
+﻿
 
-namespace Catalog.API.Model
+namespace eShop.Catalog.API.Model
 {
     public class CatalogFeature
     {
@@ -15,7 +15,7 @@ namespace Catalog.API.Model
         public List<CatalogItem> CatalogItems { get; set; }
     }
 
-    public class CatalogFeatureValues
+    public class CatalogFeatureValue
     {
         public int Id { get; set; }
         public int CatalogItemId { get; set; }
