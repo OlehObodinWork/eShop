@@ -4,30 +4,31 @@
 @rendermode InteractiveServer
 @inject IDialogService DialogService
 
- <FluentNavMenu Width="250">
-            @if (ThemeState.IsDark)
-            {
-                <a class="logo logo-header" href="/admin">
+<FluentNavMenu Width="250">
+    @if (ThemeState.IsDark)
+    {
+        <a class="logo logo-header" href="/admin">
 
-                    <img id="logo" alt="Lazy Loading" src="@(ThemeState.IsDark ? "images/logofordark.png" : "images/logoforlight.png" )" class="logo logo-header" />
+            <img id="logo" alt="Lazy Loading" src="@(ThemeState.IsDark ? "images/logofordark.png" : "images/logoforlight.png" )" class="logo logo-header" />
 
-                </a>
-            }
-            else
-            {
-                <a class="logo logo-header" href="/admin">
+        </a>
+    }
+    else
+    {
+        <a class="logo logo-header" href="/admin">
 
-                    <img id="logo" alt="Lazy Loading" src="images/logoforlight.png" class="logo logo-header" />
+            <img id="logo" alt="Lazy Loading" src="images/logoforlight.png" class="logo logo-header" />
 
-                </a>
-            }
+        </a>
+    }
 
-           @*  <FluentNavLink Href="/product-table" >Item 1</FluentNavLink>
+    @*  <FluentNavLink Href="/product-table" >Item 1</FluentNavLink>
             <FluentNavLink OnClick=@(() => HandleOnNavClick("ProductEdit"))>Item 1</FluentNavLink> *@
-            <FluentMenuButton @ref=menubuttonm Text="+ Add New" IconStart="null" OnMenuChanged="HandleOnMenuChanged">
-                <FluentMenuItem Id="AddProduct">Product</FluentMenuItem>
-            </FluentMenuButton>
-        </FluentNavMenu>
+    <FluentMenuButton @ref=menubuttonm Text="+ Add New" IconStart="null" OnMenuChanged="HandleOnMenuChanged">
+        <FluentMenuItem Id="AddProduct">Product</FluentMenuItem>
+        <FluentMenuItem Id="AddFeature">Feature</FluentMenuItem>
+    </FluentMenuButton>
+</FluentNavMenu>
 @code {
     private string? showSection;
     private FluentMenuButton menubuttonm = new();
@@ -41,13 +42,25 @@
     {
         if (args.Id == "AddProduct")
         {
-            await OpenDialogAsync(args.Value);
+
         }
+
+        switch (args.Id)
+        {
+            case "AddProduct":
+                await OpenDialogAsync(args.Value);
+                break;
+            case "AddFeature":
+                await OpenDialogFeatureAsync(args.Value);
+                break;
+        }
+        
+
+
     }
 
 
-    private bool _trapFocus = true;
-    private bool _modal = true;
+    
 
     private async Task OpenDialogAsync(string? title)
     {
@@ -56,10 +69,9 @@
         DialogParameters parameters = new()
             {
                 Title = title,
-                PrimaryActionEnabled = false,
                 Width = "500px",
-                TrapFocus = _trapFocus,
-                Modal = _modal,
+                TrapFocus = true,
+                Modal = true,
                 PreventScroll = true,
 
             };
@@ -67,6 +79,31 @@
 
 
         IDialogReference dialog = await DialogService.ShowDialogAsync<AddProductDialog>(parameters);
+        DialogResult? result = await dialog.Result;
+
+
+        Console.WriteLine($"Dialog closed - Canceled: {result.Cancelled}");
+
+    }
+
+
+    private async Task OpenDialogFeatureAsync(string? title)
+    {
+        Console.WriteLine($"Open dialog centered");
+
+        DialogParameters parameters = new()
+            {
+                Title = title,
+                Width = "500px",
+                TrapFocus = true,
+                Modal = true,
+                PreventScroll = true,
+
+            };
+
+
+
+        IDialogReference dialog = await DialogService.ShowDialogAsync<AddFeatureDialog>(parameters);
         DialogResult? result = await dialog.Result;
 
 

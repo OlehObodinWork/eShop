@@ -23,16 +23,21 @@ public static class CatalogApi
         // Routes for resolving catalog items by type and brand.
         api.MapGet("/items/type/{typeId}/brand/{brandId?}", GetItemsByBrandAndTypeId);
         api.MapGet("/items/type/all/brand/{brandId:int?}", GetItemsByBrandId);
-        api.MapGet("/catalog-features-values/{catalogId:int?}", GetFeatureByCatalogId);
         //api.MapGet("/catalogtypes", async (CatalogContext context) => await context.CatalogTypes.OrderBy(x => x.Type).ToListAsync());
         //api.MapGet("/catalogbrands", async (CatalogContext context) => await context.CatalogBrands.OrderBy(x => x.Brand).ToListAsync());
 
         // Routes for modifying catalog items.
         api.MapPut("/items", UpdateItem);
         api.MapPost("/items", CreateItem);
-        api.MapPost("/features", CreateFeature);
+       
         api.MapDelete("/items/{id:int}", DeleteItemById);
         api.MapGet("items/sync", SyncItem);
+
+
+        api.MapPost("/features", CreateFeature);
+        api.MapGet("/features", GetAllFeatures);
+        api.MapPost("/catalog-features-values/{catalogId:int?}", AddFeatureToCatalogItem);
+        api.MapGet("/catalog-features-values/{catalogId:int?}", GetFeaturesByCatalogId);
         return app;
     }
 
@@ -398,12 +403,15 @@ public static class CatalogApi
         [AsParameters] CatalogServices services,
         CatalogFeature feature)
     {
-        var newFeature = new CatalogFeature
-        {
-            TitleEN = feature.TitleEN,
-            TitleDE = feature.TitleDE,
-            Icon = feature.Icon,
-        };
+
+        // Don't need any validation for now
+
+        //var newFeature = new CatalogFeature
+        //{
+        //    TitleEN = feature.TitleEN,
+        //    TitleDE = feature.TitleDE,
+        //    Icon = feature.Icon,
+        //};
 
         services.Context.CatalogFeatures.Add(feature);
         await services.Context.SaveChangesAsync();
@@ -411,7 +419,28 @@ public static class CatalogApi
         return TypedResults.Created($"/api/catalog/features/{feature.Id}");
     }
 
-   
+
+    public static async Task<Results<Created, NotFound<string>>> UpdateFeatureValue(
+       [AsParameters] CatalogServices services,
+       CatalogFeatureValue featureValueToUpdate)
+    {
+        var catalogFeatureValue = await services.Context.CatalogFeatureValues.SingleOrDefaultAsync(i => i.Id == featureValueToUpdate.Id);
+
+        if (catalogFeatureValue == null)
+        {
+            return TypedResults.NotFound($"Item with id {catalogFeatureValue.Id} not found.");
+        }
+
+        // Update current product
+        var featureValueEntry = services.Context.Entry(catalogFeatureValue);
+        featureValueEntry.CurrentValues.SetValues(catalogFeatureValue);
+
+       
+        await services.Context.SaveChangesAsync();
+        return TypedResults.Created($"/api/catalog/catalog-features-values/{catalogFeatureValue.Id}");
+    }
+
+
     public static async Task<Results<Ok<PaginatedItems<CatalogFeature>>, BadRequest<string>>> GetAllFeatures(
     [AsParameters] PaginationRequest paginationRequest,
     [AsParameters] CatalogServices services)
@@ -431,7 +460,14 @@ public static class CatalogApi
         return TypedResults.Ok(new PaginatedItems<CatalogFeature>(pageIndex, pageSize, totalItems, featuresOnPage));
     }
 
-    public static async Task<Ok> AddFeatureToCatalogItem([AsParameters] CatalogServices services, CatalogFeatureValue catalogFeatureValue)
+    public static async Task<Created> AddFeatureToCatalogItem([AsParameters] CatalogServices services, CatalogFeatureValue catalogFeatureValue)
+    {
+        services.Context.CatalogFeatureValues.Add(catalogFeatureValue);
+        await services.Context.SaveChangesAsync();
+        return TypedResults.Created($"/api/catalog/catalog-features-values/{catalogFeatureValue.Id}");
+    }
+
+    public static async Task<Ok>ChangeFeatureValueCatalogItem([AsParameters] CatalogServices services, CatalogFeatureValue catalogFeatureValue)
     {
         //var newCatalogFeatureValue = new CatalogFeatureValues
         //{

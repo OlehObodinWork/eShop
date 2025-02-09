@@ -8,8 +8,9 @@
 <FluentMessageBarProvider Section="" MaxMessageCount="1" />
 
 @* <p>Your lastname is @Content.Lastname and you are @Content.Age years young </p> *@
+<FluentTextField @bind-Value="@FeatureTitle" Immediate="true">Title</FluentTextField>
+<FluentTextField @bind-Value="@IconName" Immediate="true">Icon</FluentTextField>
 
-<FluentTextField @bind-Value="@SKU" Immediate="true">Product SKU</FluentTextField>
 
 <FluentDialogFooter>
     <FluentButton Appearance="Appearance.Accent" Disabled=@_disabledButton OnClick="OnAddButtonClick">Add</FluentButton>
@@ -33,26 +34,37 @@
 
     [CascadingParameter]
     public FluentDialog? Dialog { get; set; }
-
-    private string? _SKU;
     private bool _disabledButton = true;
-    public string? SKU { 
-        get => _SKU; 
+    private string? _IconName = "";
+    public string? IconName { 
+        get => _IconName;
         set 
         { 
-            _SKU = value; Console.WriteLine(value);
-            if (value != null && value.Length > 0) _disabledButton = false;
+            _IconName = value; Console.WriteLine(value);
+            if (_IconName?.Length > 0 && _FeatureTitle?.Length > 0) _disabledButton = false;
             else _disabledButton = true;
-            // Dialog!.TogglePrimaryActionButton(false);
         } 
+    }
+
+    private string? _FeatureTitle;
+    public string? FeatureTitle
+    {
+        get => _FeatureTitle;
+        set
+        {
+            _FeatureTitle = value; Console.WriteLine(value);
+            if (_IconName?.Length > 0 && _FeatureTitle?.Length > 0) _disabledButton = false;
+            else _disabledButton = true;
+            Console.WriteLine(_IconName);
+        }
     }
 
     private async void OnAddButtonClick() {
         //var content = new StringContent($"{{'SKU': '{SKU}', 'api-version': '1'}}", Encoding.UTF8, "application/json");
-        var url = $"{Configuration["Endpoints:CatalogAPI"]}/api/catalog/items/sync?SKU={SKU}&api-version=1";
-        var response = await Http.GetAsync(url);
-        var result = await response.Content.ReadAsStringAsync();
-        Console.WriteLine(result);
+        // var url = $"{Configuration["Endpoints:CatalogAPI"]}/api/catalog/items/sync?SKU={SKU}&api-version=1";
+        // var response = await Http.GetAsync(url);
+        // var result = await response.Content.ReadAsStringAsync();
+        // Console.WriteLine(result);
         await Dialog!.CloseAsync();
     }
 
