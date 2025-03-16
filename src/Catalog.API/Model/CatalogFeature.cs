@@ -12,7 +12,6 @@ namespace eShop.Catalog.API.Model
         public string TitleDE { get; set; }
 
 
-        public List<CatalogItem> CatalogItems { get; set; }
     }
 
     public class CatalogFeatureValue

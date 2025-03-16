@@ -94,7 +94,6 @@ public class CatalogItem
 
     public ICollection<EnchancedImages> EnhancedImages { get; } = new List<EnchancedImages>();
 
-    public List<CatalogFeature> CatalogFeatures { get; set; } 
 
     public List<CatalogKit> CatalogKits { get; set; }
 
