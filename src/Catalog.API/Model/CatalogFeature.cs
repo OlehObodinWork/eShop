@@ -7,10 +7,7 @@ namespace eShop.Catalog.API.Model
         public int Id { get; set; }
         public string Icon { get; set; }
 
-        public string TitleEN { get; set; }
-
-        public string TitleDE { get; set; }
-
+        public string Title { get; set; }
 
     }
 
@@ -23,7 +20,6 @@ namespace eShop.Catalog.API.Model
         public int CatalogFeatureId { get; set; }
         public CatalogFeature CatalogFeature { get; set; }
 
-        public string ValueEN {get; set;}
-        public string ValueDE { get; set; }
+        public string Value {get; set;}
     }
 }

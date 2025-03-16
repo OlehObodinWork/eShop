@@ -406,14 +406,13 @@ public static class CatalogApi
 
         // Don't need any validation for now
 
-        //var newFeature = new CatalogFeature
-        //{
-        //    TitleEN = feature.TitleEN,
-        //    TitleDE = feature.TitleDE,
-        //    Icon = feature.Icon,
-        //};
+        var newFeature = new CatalogFeature
+        {
+            Title = feature.Title,
+            Icon = feature.Icon,
+        };
 
-        services.Context.CatalogFeatures.Add(feature);
+        services.Context.CatalogFeatures.Add(newFeature);
         await services.Context.SaveChangesAsync();
 
         return TypedResults.Created($"/api/catalog/features/{feature.Id}");
@@ -452,7 +451,7 @@ public static class CatalogApi
             .LongCountAsync();
 
         var featuresOnPage = await services.Context.CatalogFeatures
-            .OrderBy(c => c.TitleEN)
+            .OrderBy(c => c.Title)
             .Skip(pageSize * pageIndex)
             .Take(pageSize)
             .ToListAsync();

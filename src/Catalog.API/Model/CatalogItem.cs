@@ -11,31 +11,19 @@ public class CatalogItem
     public int Id { get; set; }
 
 
-    public string Name { get; set; }
-
     [JsonPropertyName("productNameEn")]
     [MaxLength(250)]
     public string OriginName { get; set; }
 
     [MaxLength(200)]
-    public string NameEN { get; set; }
+    public string Name { get; set; }
 
-    [MaxLength(200)]
-    public string NameDE { get; set; }
 
     [JsonPropertyName("description")]
 
     [MaxLength(5000)]
 
     public string Description { get; set; }
-
-    [MaxLength(5000)]
-    public string DescriptionDE { get; set; }
-
-    [MaxLength(5000)]
-    public string DescriptionEN { get; set; }
-
-
 
     [JsonPropertyName("productWeight")]
     public string ProductWeight { get; set; }
@@ -50,10 +38,8 @@ public class CatalogItem
 
     [MaxLength(200)]
     [JsonPropertyName("categoryName")]
-    public string CategoryNameEN { get; set; }
+    public string CategoryName{ get; set; }
 
-    [MaxLength(200)]
-    public string CategoryNameDE { get; set; }
 
 
     [JsonPropertyName("productSku")]
@@ -61,11 +47,7 @@ public class CatalogItem
 
 
     [JsonPropertyName("productKeyEn")]
-    public string ProductKeyEN { get; set; }
-
-    public string ProductKenDE { get; set; }
-
-
+    public string ProductKey { get; set; }
 
     public decimal Price { get; set; }
 
@@ -106,14 +88,10 @@ public class CatalogItem
 
 
     [JsonPropertyName("packingNameEn")]
-    public string PackingNameEN { get; set; }
+    public string PackingName { get; set; }
 
-    public string PackingNameDE { get; set; }
+    public string PackingNameSet { get; set; }
 
-
-    public string PackingNameSetEN { get; set; }
-
-    public string PackingNameSetDE { get; set; }
 
     public int CatalogTypeId { get; set; }
 

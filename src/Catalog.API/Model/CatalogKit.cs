@@ -6,8 +6,6 @@
 
         public string Name { get; set; }
 
-        public string NameDE { get; set; }
-
         public List<CatalogItem> CatalogItems { get; set; }
     }
 }

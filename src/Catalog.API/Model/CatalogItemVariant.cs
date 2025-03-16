@@ -31,11 +31,10 @@ namespace Catalog.API.Model
         public string VariantSKU { get; set; }
 
         [JsonPropertyName("variantKey")]
-        public string VariantKeyEN { get; set; }
+        public string VariantKey { get; set; }
 
-        public string VarianKeyEnAdjusted { get; set; }
+        public string VarianKeyAdjust { get; set; }
 
-        public string VariantKeyDE { get; set; }
 
         [JsonPropertyName("variantLength")]
         public decimal VariantLength { get; set; }
@@ -86,7 +85,7 @@ namespace Catalog.API.Model
 
         public void VarianKeyAdjusted()
         {
-            var keys = VariantKeyEN.Split('-');
+            var keys = VariantKey.Split('-');
 
             int shoeSize;
 
@@ -96,8 +95,8 @@ namespace Catalog.API.Model
             {
                 shoeSize -= 2;
 
-                VarianKeyEnAdjusted = $"{keys[0]}-{shoeSize}";
-                VariantKeyDE = $"{keys[0]}-{shoeSize}";
+                VarianKeyAdjust = $"{keys[0]}-{shoeSize}";
+                
             } else
             {
                 string adjustedSize = keys[1] switch
@@ -113,8 +112,7 @@ namespace Catalog.API.Model
                     "S" => "XS", // Adjusting S to XS since two sizes lower from S would be beyond XS.
                     _ => keys[1] // Keeping XS as XS, since there is no smaller size.
                 };
-                VarianKeyEnAdjusted = $"{keys[0]}-{adjustedSize}";
-                VariantKeyDE = $"{keys[0]}-{adjustedSize}";
+                VarianKeyAdjust = $"{keys[0]}-{adjustedSize}";
             }
         }
 
