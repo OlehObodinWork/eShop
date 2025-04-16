@@ -9,10 +9,10 @@
 
 @* <p>Your lastname is @Content.Lastname and you are @Content.Age years young </p> *@
 
-<FluentTextField @bind-Value="@SKU" Immediate="true">Product SKU</FluentTextField>
+<FluentTextField @bind-Value="@SKU" Label="Add" Immediate="true"></FluentTextField>
 
 <FluentDialogFooter>
-    <FluentButton Appearance="Appearance.Accent" Disabled=@_disabledButton OnClick="OnAddButtonClick">Add</FluentButton>
+    <FluentButton Appearance="Appearance.Accent"  Disabled=@_disabledButton OnClick="OnAddButtonClick">Add</FluentButton>
     <FluentButton Appearance="Appearance.Neutral" OnClick="OnCancelButtonClick">Cancel</FluentButton>
 </FluentDialogFooter>
 

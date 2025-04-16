@@ -254,6 +254,7 @@
 }
 
 
+
 h1, h2, h3, h4, h5, h6 {
     /*font-family: 'Plus Jakarta Sans', sans-serif !important;*/
 }
@@ -406,3 +407,30 @@ h1:focus {
     max-width: 250px;
     min-width: 100px;
 }
+
+
+/* Shadow dom part */
+
+fluent-text-area::part(control) {
+    height: 400px;
+}
+
+/* End shadow dom part */
+
+
+
+
+/* Helpers - switch to tailwind later */
+
+.flex-center {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center
+}
+
+
+.flex-center * {
+    padding-bottom: 0;
+    margin-bottom:0;
+}
+/* End helpers */

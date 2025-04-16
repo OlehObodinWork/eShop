@@ -2,7 +2,7 @@
 @layout AdminLayout
 @attribute [Authorize(Roles = "Administrator")]
 @inject HttpClient Http
-@rendermode InteractiveServer
+@rendermode InteractiveServer   
 @inject NavigationManager NavManager
 @using Microsoft.Extensions.Configuration
 @using System.Text.Json
@@ -10,6 +10,7 @@
 @inject IConfiguration Configuration
 @using Microsoft.FluentUI.AspNetCore.Components
 @using System.Text
+@inject IDialogService DialogService
 
 
 
@@ -19,9 +20,9 @@
 
     <FluentGrid Spacing="@Spacing" OnBreakpointEnter="@OnBreakpointEnterHandler" AdaptiveRendering="true" Justify="@Justification" Style=" ">
         <FluentGridItem xs="12" sm="8">
-            <h3>Product : @CatalogItem?.ProductNameEn</h3>
-            <h5> Original Description:</h5>
-            <p>@CatalogItem?.Description</p>
+            <h3>Product : @CatalogItem?.OriginName</h3>
+            @*   <h5> Original Description:</h5>
+            <p>@CatalogItem?.Description</p> *@
             <div class="card">
                 @if (CatalogItemVariants != null)
                 {
@@ -32,89 +33,78 @@
                                 <FluentGridItem xs="12" sm="2">
 
                                     <img style="display: block; max-width: 100%;" src="@(group.FirstOrDefault()?.VariantImage)" />
-                                    @group.FirstOrDefault()?.VariantKey!.Split("-")[0]
+
                                 </FluentGridItem>
 
                                 <FluentGridItem xs="12" sm="2">
-                                    <FluentTextField ValueChanged=@((string value) => KeyNameChanged(value, group, "EN")) Placeholder="Key Name EN"></FluentTextField>
-                                    <FluentTextField ValueChanged=@((string value) => KeyNameChanged(value, group, "DE")) Placeholder="Key Name DE"></FluentTextField>
+                                    <FluentTextField Value=@group.FirstOrDefault()?.VariantKey!.Split("-")[0] ValueChanged=@((string value) => KeyNameChanged(value, group)) Placeholder="Key Name"></FluentTextField>
 
                                 </FluentGridItem>
                                 <FluentGridItem xs="12" sm="8">
                                     <div class="card-list-items">
                                         @foreach (var variant in group)
                                         {
-                                            <div>
-                                                <div>
-                                                    @variant?.VarianKeyEnAdjusted!.Split("-")[1]
+                                            <div class="card-list-item">
+                                                <span>
+                                                    @variant?.VarianKeyAdjust!.Split("-")[1]
 
                                                     @*  <FluentTextField @bind-Value=@variant!.VariantKeyValue Label="Variant Value"></FluentTextField> *@
                                                     @*  <FluentTextField @bind-Value=@variant!.VariantKeyDE Label="Variant Key DE"></FluentTextField>  *@
-
-                                                </div>
-                                                <div> @variant?.VariantFinallPrice?.ToString("C")</div>
+                                                </span>
+                                                <span> @variant?.VariantFinallPrice?.ToString("C")</span>
                                             </div>
                                         }
                                     </div>
                                 </FluentGridItem>
                             </FluentGrid>
-
-
                         }
                     </div>
                 }
             </div>
+          
         </FluentGridItem>
 
         <FluentGridItem xs="12" sm="4">
             <div class="card">
                 <FluentGrid Spacing="@Spacing" OnBreakpointEnter="@OnBreakpointEnterHandler" AdaptiveRendering="true" Justify="@Justification" Style=" ">
                     <FluentGridItem xs="12" sm="6">
-                        <FluentTextField @bind-Value=CatalogItem.NameEN Label="Product name EN"></FluentTextField>
-                    </FluentGridItem>
-                    <FluentGridItem xs="12" sm="6">
-                        <FluentTextField @bind-Value=CatalogItem.NameDE Label="Product Name DE"></FluentTextField>
+                        <FluentTextField @bind-Value=CatalogItem.Name Label="Product name"></FluentTextField>
                     </FluentGridItem>
                 </FluentGrid>
 
                 <p>
-                    <FluentTextArea style="width: 100%" @bind-Value=CatalogItem.DescriptionEN Label="Description EN" />
+                    <FluentTextArea style="width: 100%;" Resize="TextAreaResize.Vertical" @bind-Value=CatalogItem.Description Label="Description" />
                 </p>
 
-                <p>
-                    <FluentTextArea style="width: 100%" @bind-Value=CatalogItem.DescriptionDE Label="Description DE" />
-                </p>
+                <div class="flex-center">
+                    <h5>Features: </h5> <FluentButton OnClick="OnAddFeatureButtonClick" Appearance="Appearance.Outline" style="margin-left: 10px">+</FluentButton>
+                </div>
+               
+
 
                 <FluentGrid Spacing="@Spacing" OnBreakpointEnter="@OnBreakpointEnterHandler" AdaptiveRendering="true" Justify="@Justification" Style=" ">
                     <FluentGridItem xs="12" sm="6">
-                        <FluentTextField @bind-Value=CatalogItem.PackingNameEN Label="Packing Name EN"></FluentTextField>
-
-                    </FluentGridItem>
-                    <FluentGridItem xs="12" sm="6">
-                        <FluentTextField @bind-Value=CatalogItem.PackingNameDE Label="Packing Name DE"></FluentTextField>
+                        <FluentTextField @bind-Value=CatalogItem.PackingName Label="Packing Name"></FluentTextField>
                     </FluentGridItem>
 
                     <FluentGridItem xs="12" sm="6">
-                        <FluentTextField @bind-Value=CatalogItem.ProductKeyEn Label="Product Key EN"></FluentTextField>
+                        <FluentTextField @bind-Value=CatalogItem.ProductKey Label="Product Key"></FluentTextField>
 
                     </FluentGridItem>
-                    <FluentGridItem xs="12" sm="6">
-                        <FluentTextField @bind-Value=CatalogItem.ProductKenDE Label="Product key DE"></FluentTextField>
-                    </FluentGridItem>
+
 
 
                     <FluentGridItem xs="12" sm="6">
-                        <FluentTextField @bind-Value=CatalogItem.CategoryNameEN Label="Category Name EN"></FluentTextField>
+                        <FluentTextField @bind-Value=CatalogItem.CategoryName Label="Category Name"></FluentTextField>
+                    </FluentGridItem>
 
-                    </FluentGridItem>
-                    <FluentGridItem xs="12" sm="6">
-                        <FluentTextField @bind-Value=CatalogItem.CategoryNameDE Label="Category Name DE"></FluentTextField>
-                    </FluentGridItem>
                 </FluentGrid>
+              
                 <FluentButton OnClick="OnSaveButtonClick"> Save </FluentButton>
+                <FluentButton OnClick="OnArchiveButtonClick"> Archive  </FluentButton>
             </div>
         </FluentGridItem>
-
+        
     </FluentGrid>
 }
 
@@ -138,15 +128,14 @@
         Console.WriteLine($"Page Size: {size}");
     }
 
-    public void KeyNameChanged(string value, IGrouping<string, CatalogItemVariantDto> group, string lang)
+    public void KeyNameChanged(string value, IGrouping<string, CatalogItemVariantDto> group)
     {
-        Console.WriteLine(value);
+
         foreach (var variant in group)
         {
-            if (lang == "EN") variant.VariantKeyNameEN = value;
-            if (lang == "DE") variant.VariantKeyNameDE = value;
+            variant.VariantKeyName = value;
         }
-      
+
     }
 
     protected override async Task OnInitializedAsync()
@@ -172,7 +161,7 @@
         // numResults = (await Http.GetFromJsonAsync<FoodRecallQueryResult>("https://api.fda.gov/food/enforcement.json"))!.Count;
     }
 
-    public async void OnSaveButtonClick()
+    public async Task OnSaveButtonClick()
     {
         await UpdateProductAsync();
     }
@@ -186,6 +175,57 @@
         // response.EnsureSuccessStatusCode();
         var responseBody = await response.Content.ReadAsStringAsync();
         Console.WriteLine(responseBody);
+    }
+
+    public async Task ArchiveProductAsync()
+    {
+        var url = $"{Configuration["Endpoints:CatalogAPI"]}/api/catalog/items?api-version=1";
+        var json = JsonSerializer.Serialize(CatalogItem);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        var response = await Http.DeleteAsync(url);
+    }
+
+    public async Task OnArchiveButtonClick()
+    {
+        await ArchiveProductAsync();
+    }
+
+
+    public async Task AddFeature()
+    {
+        var url = $"{Configuration["Endpoints:CatalogAPI"]}/api/catalog/items?api-version=1";
+        var json = JsonSerializer.Serialize(CatalogItem);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        var response = await Http.DeleteAsync(url);
+    }
+
+    public async Task OnAddFeatureButtonClick()
+    {
+        await OpenDialogFeatureAsync();
+    }
+
+    private async Task OpenDialogFeatureAsync()
+    {
+        Console.WriteLine($"Open dialog centered");
+
+        DialogParameters parameters = new()
+        {
+            Title = "Value",
+            Width = "500px",
+            TrapFocus = true,
+            Modal = true,
+            PreventScroll = true,
+
+        };
+
+
+
+        IDialogReference dialog = await DialogService.ShowDialogAsync<AddFeatureToProductDialog>(parameters);
+        DialogResult? result = await dialog.Result;
+
+
+        Console.WriteLine($"Dialog closed - Canceled: {result.Cancelled}");
+
     }
 
 

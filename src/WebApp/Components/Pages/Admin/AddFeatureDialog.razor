@@ -4,6 +4,7 @@
 @using System.Text
 @inject HttpClient Http
 @using Microsoft.Extensions.Configuration 
+@using System.Text.Json
 @inject IConfiguration Configuration
 <FluentMessageBarProvider Section="" MaxMessageCount="1" />
 
@@ -35,12 +36,13 @@
     [CascadingParameter]
     public FluentDialog? Dialog { get; set; }
     private bool _disabledButton = true;
+    private CatalogFeatureDto? CatalogFeature { get; set; }
     private string? _IconName = "";
     public string? IconName { 
         get => _IconName;
         set 
         { 
-            _IconName = value; Console.WriteLine(value);
+            _IconName = value;
             if (_IconName?.Length > 0 && _FeatureTitle?.Length > 0) _disabledButton = false;
             else _disabledButton = true;
         } 
@@ -52,19 +54,21 @@
         get => _FeatureTitle;
         set
         {
-            _FeatureTitle = value; Console.WriteLine(value);
+            _FeatureTitle = value;
             if (_IconName?.Length > 0 && _FeatureTitle?.Length > 0) _disabledButton = false;
             else _disabledButton = true;
-            Console.WriteLine(_IconName);
         }
     }
 
     private async void OnAddButtonClick() {
-        //var content = new StringContent($"{{'SKU': '{SKU}', 'api-version': '1'}}", Encoding.UTF8, "application/json");
-        // var url = $"{Configuration["Endpoints:CatalogAPI"]}/api/catalog/items/sync?SKU={SKU}&api-version=1";
-        // var response = await Http.GetAsync(url);
-        // var result = await response.Content.ReadAsStringAsync();
-        // Console.WriteLine(result);
+        //var content = new StringContent($"{{'Icon': '{_IconName}','Title': '{_FeatureTitle}' 'api-version': '1'}}", Encoding.UTF8, "application/json");
+        var url = $"{Configuration["Endpoints:CatalogAPI"]}/api/catalog/features?api-version=1";
+        CatalogFeature = new CatalogFeatureDto { Icon = IconName, Title = FeatureTitle };
+        var json = JsonSerializer.Serialize(CatalogFeature);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        var response = await Http.PostAsync(url, content);
+        var result = await response.Content.ReadAsStringAsync();
+        Console.WriteLine(result);
         await Dialog!.CloseAsync();
     }
 

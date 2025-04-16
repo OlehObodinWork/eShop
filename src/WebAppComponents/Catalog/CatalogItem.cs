@@ -23,20 +23,23 @@ public class CatalogItemTest
 
 public class CatalogItemDetailDto
 {
-    public string? NameEN { get; set; }
-    public string? NameDE { get; set; }
+
+    [JsonPropertyName("productNameEn")]
+    public string? OriginName { get; set; }
+    public string? Name { get; set; }
     public string? Description { get; set; }
-    public string? ProductNameEn { get; set; }
-    public string? DescriptionEN { get; set; }
-    public string? DescriptionDE { get; set; }
-    public string? PackingNameEN { get; set; }
-    public string? PackingNameDE { get; set; }
-    public string? ProductKeyEn { get; set; }
-    public string? ProductKenDE { get; set; }
-    public string? CategoryNameEN { get; set; }
-    public string? CategoryNameDE { get; set; }
+    public string? ProductName { get; set; }
+    public string? PackingName { get; set; }
+    public string? ProductKey { get; set; }
+    public string? CategoryName { get; set; }
 
     public List<CatalogItemVariantDto>? CatalogItemVariants { get; set; }
+}
+
+public class CatalogFeatureDto
+{
+    public string? Icon { get; set; }
+    public string? Title { get; set; }
 }
 
 
@@ -47,30 +50,16 @@ public class CatalogItemVariantDto
 
     public string? VariantKey { get; set; }
 
-    public string? VarianKeyEnAdjusted { get; set; }
+    public string? VarianKeyAdjust { get; set; }
 
     public decimal? VariantFinallPrice { get; set; }
-    public string? VariantKeyDE { get; set; }
     public decimal? VariantSellPrice { get; set; }
 
-    public string? VariantKeyNameEN { get; set; }
+    public string? VariantKeyName { get; set; }
 
-    public string? VariantKeyNameDE { get; set; }
 
     public string? VariantKeyValue { get; set; }
 
-
-}
-
-
-public class CatalogFeature
-{
-
-    public string? Icon { get; set; }
-
-    public string? TitleEN { get; set; }
-
-    public string? TitleDE { get; set; }
 
 }
 
