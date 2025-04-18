@@ -23,7 +23,7 @@ public class CatalogItemTest
 
 public class CatalogItemDetailDto
 {
-
+    public int Id { get; set; }
     [JsonPropertyName("productNameEn")]
     public string? OriginName { get; set; }
     public string? Name { get; set; }
@@ -38,8 +38,18 @@ public class CatalogItemDetailDto
 
 public class CatalogFeatureDto
 {
+
+    public int Id { get; set; }
     public string? Icon { get; set; }
     public string? Title { get; set; }
+}
+
+public class CatalogFeatureValueDto {
+    public int CatalogFeatureId { get; set; }
+
+    public int CatalogItemId { get; set; }
+
+    public string? Value { get; set; }
 }
 
 

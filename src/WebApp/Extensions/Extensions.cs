@@ -31,6 +31,7 @@ public static class Extensions
         builder.Services.AddSingleton<OrderStatusNotificationService>();
         builder.Services.AddSingleton<IProductImageUrlProvider, ProductImageUrlProvider>();
         builder.Services.AddSingleton<ThemeState>();
+        builder.Services.AddSingleton<WebAppGlobalState>();
         builder.AddAIServices();
 
         // HTTP and GRPC client registrations
