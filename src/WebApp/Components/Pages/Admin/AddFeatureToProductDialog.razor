@@ -12,21 +12,22 @@
 
 @* OptionValue="@(f => f.Id.ToString())" Does not catch the Id *@
 <FluentCombobox Label="Feature" Autofocus="true" Items="@CatalogFeatures"
-OptionText="@(f => $"{f.Id}")"
+OptionValue=@(f => $"{f!.Id}")
+OptionText="@(f => $"{f!.Title}")"
 @bind-Value="@FeatureId"
+@bind-SelectedOption="CatalogFeature"
 Immediate ImmediateDelay="100">
     <OptionTemplate>
-        <span class=@($"fa {context.Icon}")></span>
+        <span class=@($"fa {context!.Icon}")></span>
         @context.Title 
     </OptionTemplate>
 </FluentCombobox>
 <FluentTextField @bind-Value="@FeatureValue" Label="Value" Immediate="true"></FluentTextField>
-<p>Selected Feature ID: @FeatureId</p>
+@* <p>Selected Feature ID: @CatalogFeature!.Id</p> *@
 <FluentDialogFooter>
     <FluentButton Appearance="Appearance.Accent" Disabled=@_disabledButton OnClick="OnAddButtonClick">Add</FluentButton>
     <FluentButton Appearance="Appearance.Neutral" OnClick="OnCancelButtonClick">Cancel</FluentButton>
 </FluentDialogFooter>
-
 @* <FluentTextField @bind-Value="@Content.Lastname">Your lastname:</FluentTextField>
 <FluentNumberField @bind-Value="@Content.Age">Your age:</FluentNumberField> *@
 @* @if (Dialog != null)
@@ -41,6 +42,8 @@ Immediate ImmediateDelay="100">
 @code {
 
     public List<CatalogFeatureDto>? CatalogFeatures { get; set; }
+
+    public CatalogFeatureDto? CatalogFeature { get; set; }
 
     public CatalogFeatureValueDto? CatalogFeatureValue { get; set; }
 
@@ -109,7 +112,7 @@ Immediate ImmediateDelay="100">
 
         CatalogFeatureValue = new CatalogFeatureValueDto 
         { 
-            CatalogFeatureId = featureId,
+            CatalogFeatureId = CatalogFeature!.Id,
             CatalogItemId = WebAppGlobalState.CatalogIdForFeature, 
             Value = FeatureValue 
         };
