@@ -7,11 +7,16 @@ builder.AddForwardedHeaders();
 var redis = builder.AddRedis("redis");
 var rabbitMq = builder.AddRabbitMQ("eventbus")
     .WithLifetime(ContainerLifetime.Persistent);
+
+
+var username = builder.AddParameter("dbuser", secret: true);
+var password = builder.AddParameter("dbpassword", secret: true);
+
 var postgres = builder.AddPostgres("postgres")
     .WithImage("ankane/pgvector")
     .WithImageTag("latest")
-    .WithLifetime(ContainerLifetime.Persistent);
-
+    .WithLifetime(ContainerLifetime.Persistent)
+    .WithBindMount(@"C:\Users\oleho\binds\eShop", "/var/lib/postgresql/data");
 var catalogDb = postgres.AddDatabase("catalogdb");
 var identityDb = postgres.AddDatabase("identitydb");
 var orderDb = postgres.AddDatabase("orderingdb");
