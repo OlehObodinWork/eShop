@@ -171,6 +171,10 @@ fluent-text-area::part(control) {
     height: 400px;
 }
 
+fluent-tabs {
+    padding: 0 !important;
+}
+
 /* End shadow dom part */
 
 
@@ -185,8 +189,8 @@ fluent-text-area::part(control) {
 }
 
 
-    .flex-center * {
-        padding-bottom: 0;
-        margin-bottom: 0;
-    }
+.flex-center * {
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
 /* End helpers */

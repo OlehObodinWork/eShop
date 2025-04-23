@@ -4,7 +4,6 @@
 @using eShop.WebApp.Components.UI
 
 @inject ThemeState ThemeState
-@inject IJSRuntime JS
 @rendermode InteractiveServer
 
 
@@ -18,22 +17,16 @@
     <div class="container">
 
         <nav class="eshop-header-navbar">
-            @if (ThemeState.IsDark)
-            {
-                <a class="logo logo-header" href="/">
-
-                    <img id="logo" alt="Lazy Loading" src="@(ThemeState.IsDark ? "images/logofordark.png" : "images/logoforlight.png" )" class="logo logo-header" />
-
-                </a>
+            @{
+                var logo = ThemeState.IsDark ? "images/logofordark.png" : "images/logoforlight.png";
             }
-            else
-            {
-                <a class="logo logo-header" href="/">
+            
+            <a class="logo logo-header" href="/">
 
-                    <img id="logo" alt="AdventureWorks" src="images/white_bg_logo-removebg-preview.png" class="logo logo-header" />
+                <img id="logo" alt="Lazy Loading" src="@logo" class="logo logo-header" />
 
-                </a>
-            }
+            </a>
+           
             <a class="eshop-header-nav" href="">
                 Home
             </a>
@@ -57,22 +50,22 @@
     </div>
 </div>
 
-<div class="secondary-nav-container">
+@* <div class="secondary-nav-container">
     <div class="container">
         <FluentGrid AdaptiveRendering="true">
             <FluentGridItem xs="12">
                 <ul class="secondary-nav">
-                    @*       <li class="secondary-nav-item "><FluentIcon CustomColor="var(--neutral-foreground-hint)" Color="@Color.Custom" Style="margin-right: 8px" Icon="@(Icons.Regular.Size20.ConferenceRoom)" />Indoor</li>
+                          <li class="secondary-nav-item "><FluentIcon CustomColor="var(--neutral-foreground-hint)" Color="@Color.Custom" Style="margin-right: 8px" Icon="@(Icons.Regular.Size20.ConferenceRoom)" />Indoor</li>
                     <li class="secondary-nav-item "><FluentIcon CustomColor="var(--neutral-foreground-hint)" Color="@Color.Custom" Style="margin-right: 8px" Icon="@(Icons.Regular.Size20.StreetSign)" />Outdoor</li>
                     <li class="secondary-nav-item "><FluentIcon CustomColor="var(--neutral-foreground-hint)" Color="@Color.Custom" Style="margin-right: 8px" Icon="@(Icons.Regular.Size20.VehicleBicycle)" />Specific</li>
                     <li class="secondary-nav-item "><FluentIcon CustomColor="var(--neutral-foreground-hint)" Color="@Color.Custom" Style="margin-right: 8px" Icon="@(Icons.Regular.Size20.HeartPulse)" />Wellness</li>
-                    <li class="secondary-nav-item "><FluentIcon CustomColor="var(--neutral-foreground-hint)" Color="@Color.Custom" Style="margin-right: 8px" Icon="@(Icons.Regular.Size20.Accessibility)" />BodyPart</li> *@
+                    <li class="secondary-nav-item "><FluentIcon CustomColor="var(--neutral-foreground-hint)" Color="@Color.Custom" Style="margin-right: 8px" Icon="@(Icons.Regular.Size20.Accessibility)" />BodyPart</li>
                 </ul>
             </FluentGridItem>
         </FluentGrid>
     </div>
 </div>
-
+ *@
 
 @code {
     [CascadingParameter]
@@ -81,21 +74,6 @@
     // We can use Endpoint Metadata to determine the page currently being visited
     private Type? PageComponentType => HttpContext?.GetEndpoint()?.Metadata.OfType<ComponentTypeMetadata>().FirstOrDefault()?.Type;
     private bool IsCatalog => PageComponentType == typeof(Pages.Catalog.Catalog);
-
-
-    // private bool _isdark { get; set; }
-
-    // void OnLoaded(LoadedEventArgs e)
-    // {
-    //     _isdark = e.IsDark;
-    //     StateHasChanged();
-    // }
-
-    private async Task OnLuminanceChanged()
-    {
-        await JS.InvokeVoidAsync("changeTheme");
-    }
-
 
     protected override void OnInitialized()
     {
