@@ -1,6 +1,6 @@
 ﻿﻿.main-banner {
     padding-top: 46px;
-    height: calc(100vh - 175px);
+    min-height: calc(100vh - 175px);
     position: relative;
     overflow: hidden;
 }
@@ -42,7 +42,6 @@
     display: block;
     padding-top: 4px;
     padding-bottom: 4px;
-    margin-bottom: 14px;
 }
 
 .main-header-2 {
@@ -78,39 +77,45 @@ main-banner-space-s {
     background: linear-gradient( to right, black, rgba(0,0,0, .05), black);
 }
 
-.banner-background-1 {
+.special-banner-large {
     background-image: url("/images/Untitled-2.png");
-    background-size: 70%;
+    background-size: 88%;
     background-position: top 50% right -100px;
     background-repeat: no-repeat;
-    padding-left: 56px;
+    padding-left: 22px;
+    padding-top: 4.25rem;
+    padding-bottom: 4.25rem;
 }
 
-.banner-background-2 {
+.special-banner-middle {
     background-image: url("/images/Untitled.png");
-    background-size: 70%;
-    background-position: top 50% left -150px;
+    background-size: 100%;
+    background-position: top 80% left 50%;
     background-repeat: no-repeat;
-    padding-left: 44%;
-    padding-right: 86px;
+    padding-left: 22px;
+    padding-right: 22px;
+    padding-top: 2.25rem;
+    padding-bottom: 12.25rem;
 }
 
 .banner-background-3 {
-    background-image: url("/images/smartperfomance.png");
+    background-image: url("/images/smartwatch.png");
     background-size: 50%;
     background-position: top 50% left -30px;
     background-repeat: no-repeat;
     padding-left: 44%;
     padding-right: 26px;
+    padding-bottom: 2.5rem;
 }
 
 .banner-background-4 {
-    background-image: url("/images/blacknoe.png");
+    background-image: url("/images/notebook.png");
     background-size: 60%;
     background-position: top 50% left -50px;
     background-repeat: no-repeat;
     padding-left: 44%;
     padding-right: 26px;
+    padding-bottom: 2.5rem;
 }
 
 
@@ -202,6 +207,92 @@ main-banner-space-s {
     flex-flow: row wrap;
 }
 
+
+
+
+/* Default styles (mobile-first) */
+body {
+    font-size: 14px;
+}
+
 .blog-item {
-    flex: 0 1 25%;
+    flex: 0 1 100%;
+}
+
+/* Breakpoint for small devices (smaller mobile) */
+
+@media (min-width: 480px) {
+
+
+   
+
+    .special-banner-large {
+        background-size: 70%;    
+        padding-top: 11.25rem;
+        padding-bottom: 11.25rem;
+    }
+}
+
+
+/* Breakpoint for small devices (larger mobile) */
+@media (min-width: 600px) {
+    body {
+        font-size: 16px;
+    }
+
+    .blog-item {
+        flex: 0 1 50%;
+    }
+
+    .banner-background-3 {
+        background-size: 40%;
+    }
+
+    .special-banner-middle {
+        background-image: url("/images/Untitled.png");
+        background-size: 70%;
+        background-position: top 50% left -9.37rem;
+        background-repeat: no-repeat;
+    }
+
+    .special-banner-middle {
+        background-size: 70%;
+        background-position: top 50% left -9.37rem;
+        padding-top: 7.25rem;
+        padding-bottom: 7.25rem;
+        padding-right: 5.37rem;
+        padding-left: 44%;
+    }
+}
+
+
+/* Breakpoint for large devices (small laptops) */
+@media (min-width: 960px) {
+ 
+
+    .blog-item {
+        flex: 0 1 25%;
+    }
+
+    .banner-background-3 {
+        background-size: 50%;
+    }
+
+    .special-banner-large {
+        padding-top: 0;
+        padding-bottom: 0;
+        padding-left: 3.5rem;
+    }
+}
+
+/* Breakpoint for extra large devices (desktops) */
+@media (min-width: 1280px) {
+   
+
+}
+
+/* Breakpoint for ultra-wide screens */
+@media (min-width: 1536px) {
+
+ 
 }
