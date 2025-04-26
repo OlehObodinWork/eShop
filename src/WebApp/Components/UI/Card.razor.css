@@ -43,7 +43,7 @@
     box-shadow: -.188px .179px .669px #0000000f,-.827px .786px 1.385px #00000017,-1.03px 0.929px 1.763px #0000001f,-2.909px 2.715px 4.415px #00000024,-6.577px 6.251px 9.956px #0000002b,-10.148px 9.645px 17px #0000003b
 }
 
-.custom-buttom-inner {
+.custom-button-inner {
     display: flex;
     align-items: center;
     height: 100%;
