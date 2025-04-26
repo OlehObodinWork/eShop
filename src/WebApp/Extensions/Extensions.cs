@@ -27,6 +27,7 @@ public static class Extensions
         builder.Services.AddScoped<LogOutService>();
         builder.Services.AddSingleton<BasketService>();
         builder.Services.AddSingleton<OrderStatusNotificationService>();
+        builder.Services.AddSingleton<ThemeState>();
         builder.Services.AddSingleton<IProductImageUrlProvider, ProductImageUrlProvider>();
         builder.AddAIServices();
 

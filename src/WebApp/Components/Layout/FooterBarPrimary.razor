@@ -1,0 +1,27 @@
+﻿@inject ThemeState ThemeState
+@rendermode InteractiveServer
+<footer class='eshop-footer'>
+    <div class="container">
+        <div class='eshop-footer-content'>
+            <div class='eshop-footer-row'>
+                @{
+                    var logo = ThemeState.IsDark ? "images/logofordark.png" : "images/logoforlight.png";
+                }
+
+                <img role="presentation" src=@logo class='logo logo-footer' />
+                <div>© Lazy Loading</div>
+            </div>
+        </div>
+    </div>
+</footer>
+@code {
+    protected override void OnInitialized()
+    {
+        ThemeState.OnChange += async () => await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        ThemeState.OnChange -= async () => await InvokeAsync(StateHasChanged);
+    }
+}
