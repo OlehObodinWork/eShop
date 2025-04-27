@@ -1,4 +1,6 @@
-﻿using eShop.AppHost;
+﻿using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using eShop.AppHost;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
@@ -9,8 +11,21 @@ var rabbitMq = builder.AddRabbitMQ("eventbus")
     .WithLifetime(ContainerLifetime.Persistent);
 
 
-var username = builder.AddParameter("dbuser", secret: true);
-var password = builder.AddParameter("dbpassword", secret: true);
+var keyVaultEndpoint = builder.Configuration["KeyVault:Endpoint"];
+if (string.IsNullOrEmpty(keyVaultEndpoint))
+{
+    throw new InvalidOperationException("KeyVault endpoint is not configured.");
+}
+var keyVaultUrl= new Uri(keyVaultEndpoint);
+var secretClient = new SecretClient(keyVaultUrl, new DefaultAzureCredential());
+
+
+// Retrieve the database password from Key Vault
+KeyVaultSecret dbUserSecret = secretClient.GetSecret("DbUserLocal");
+KeyVaultSecret dbPasswordSecret = secretClient.GetSecret("DbPasswordLocal");
+
+var username = dbUserSecret.Value;
+var password = dbPasswordSecret.Value;
 
 var postgres = builder.AddPostgres("postgres")
     .WithImage("ankane/pgvector")
