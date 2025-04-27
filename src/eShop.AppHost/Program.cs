@@ -21,8 +21,8 @@ var secretClient = new SecretClient(keyVaultUrl, new DefaultAzureCredential());
 
 
 // Retrieve the database password from Key Vault
-KeyVaultSecret dbUserSecret = secretClient.GetSecret("DbUserLocal");
-KeyVaultSecret dbPasswordSecret = secretClient.GetSecret("DbPasswordLocal");
+KeyVaultSecret dbUserSecret = await secretClient.GetSecretAsync("DbUserLocal");
+KeyVaultSecret dbPasswordSecret = await secretClient.GetSecretAsync("DbPasswordLocal");
 
 var username = dbUserSecret.Value;
 var password = dbPasswordSecret.Value;
