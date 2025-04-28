@@ -1,4 +1,7 @@
-﻿namespace eShop.Catalog.API.Infrastructure;
+﻿using Catalog.API.Model;
+using eShop.Catalog.API.Services;
+
+namespace eShop.Catalog.API.Infrastructure;
 
 /// <remarks>
 /// Add migrations using the following command inside the 'Catalog.API' project directory:
@@ -14,6 +17,18 @@ public class CatalogContext : DbContext
     public DbSet<CatalogItem> CatalogItems { get; set; }
     public DbSet<CatalogBrand> CatalogBrands { get; set; }
     public DbSet<CatalogType> CatalogTypes { get; set; }
+
+    public DbSet<PrimaryCatalogItemVariant> PrimaryCatalogItemVariants { get; set; }
+
+    public DbSet<PrimaryCatalogEnhancedImages> PrimaryCatalogEnhancedImages { get; set; }
+
+    public DbSet<PrimaryCatalogOriginalImages> PrimaryCatalogOriginalImages { get; set; }
+
+    public DbSet<PrimaryCatalogFeature> PrimaryCatalogFeatures { get; set; }
+
+    public DbSet<PrimaryCatalogKit> PrimaryCatalogKits { get; set; }
+
+    public DbSet<PrimaryCatalogFeatureValue> PrimaryCatalogFeatureValues { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
