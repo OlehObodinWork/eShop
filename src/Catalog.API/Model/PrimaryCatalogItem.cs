@@ -120,7 +120,7 @@ public class PrimaryCatalogItem
     /// </summary>
     public bool OnReorder { get; set; }
 
-    public CatalogItem() { }
+    public PrimaryCatalogItem() { }
 
 
     /// <summary>
