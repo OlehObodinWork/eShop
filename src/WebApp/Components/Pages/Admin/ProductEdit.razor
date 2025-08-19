@@ -33,12 +33,12 @@
                             <FluentGrid Spacing="@Spacing" OnBreakpointEnter="@OnBreakpointEnterHandler" AdaptiveRendering="true" Justify="@Justification" Style=" ">
                                 <FluentGridItem xs="12" sm="2">
 
-                                    <img style="display: block; max-width: 100%;" src="@(group.FirstOrDefault()?.VariantImage)" />
+                                    <img style="display: block; max-width: 100%;" src="@(group.FirstOrDefault()?.variantImage)" />
 
                                 </FluentGridItem>
 
                                 <FluentGridItem xs="12" sm="2">
-                                    <FluentTextField Value=@group.FirstOrDefault()?.VariantKey!.Split("-")[0] ValueChanged=@((string value) => KeyNameChanged(value, group)) Placeholder="Key Name"></FluentTextField>
+                                    <FluentTextField Value=@group.FirstOrDefault()?.variantKey!.Split("-")[0] ValueChanged=@((string value) => KeyNameChanged(value, group)) Placeholder="Key Name"></FluentTextField>
 
                                 </FluentGridItem>
                                 <FluentGridItem xs="12" sm="8">
@@ -47,12 +47,12 @@
                                         {
                                             <div class="card-list-item">
                                                 <span>
-                                                    @variant?.VarianKeyAdjust!.Split("-")[1]
+                                                    @variant?.varianKeyAdjust!.Split("-")[1]
 
                                                     @*  <FluentTextField @bind-Value=@variant!.VariantKeyValue Label="Variant Value"></FluentTextField> *@
                                                     @*  <FluentTextField @bind-Value=@variant!.VariantKeyDE Label="Variant Key DE"></FluentTextField>  *@
                                                 </span>
-                                                <span> @variant?.VariantFinallPrice?.ToString("C")</span>
+                                                <span> @variant?.variantFinallPrice?.ToString("C")</span>
                                             </div>
                                         }
                                     </div>
@@ -134,7 +134,7 @@
 
         foreach (var variant in group)
         {
-            variant.VariantKeyName = value;
+            variant.variantKeyName = value;
         }
 
     }
@@ -157,9 +157,10 @@
         CatalogItem = response;
 
 
-        CatalogItemVariants = CatalogItem?.CatalogItemVariants?.Where(item => item.VariantKey != null).GroupBy(item => item.VariantKey?.Split("-")[0] ?? "Unknown");
+        CatalogItemVariants = CatalogItem?.PrimaryCatalogItemVariants?.Where(item => item.variantKey != null).GroupBy(item => item.variantKey?.Split("-")[0] ?? "Unknown");
         // Display the number of results just for information. This is completely separate from the grid.
         // numResults = (await Http.GetFromJsonAsync<FoodRecallQueryResult>("https://api.fda.gov/food/enforcement.json"))!.Count;
+        Console.WriteLine(1234);
     }
 
     public async Task OnSaveButtonClick()

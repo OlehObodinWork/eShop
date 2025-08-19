@@ -62,8 +62,8 @@
 
     private async void OnAddButtonClick() {
         //var content = new StringContent($"{{'Icon': '{_IconName}','Title': '{_FeatureTitle}' 'api-version': '1'}}", Encoding.UTF8, "application/json");
-        var url = $"{Configuration["Endpoints:CatalogAPI"]}/api/catalog/features?api-version=1";
-        CatalogFeature = new CatalogFeatureDto { Icon = IconName, Title = FeatureTitle };
+        var url = $"{Configuration["Endpoints:CatalogAPI"]}/api/primary-catalog/features?api-version=1";
+        CatalogFeature = new CatalogFeatureDto { Icon = IconName!, Title = FeatureTitle! };
         var json = JsonSerializer.Serialize(CatalogFeature);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
         var response = await Http.PostAsync(url, content);

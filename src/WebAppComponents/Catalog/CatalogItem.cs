@@ -33,22 +33,22 @@ public class CatalogItemDetailDto
     public string? ProductKey { get; set; }
     public string? CategoryName { get; set; }
 
-    public List<CatalogItemVariantDto>? CatalogItemVariants { get; set; }
+    public List<CatalogItemVariantDto>? PrimaryCatalogItemVariants { get; set; }
 }
 
 public class CatalogFeatureDto
 {
 
     public int Id { get; set; }
-    public string? Icon { get; set; }
-    public string? Title { get; set; }
+    public required string Icon { get; set; }
+    public required string Title { get; set; }
 }
 
 public class CatalogFeatureValueDto
 {
-    public int CatalogFeatureId { get; set; }
+    public int PrimaryCatalogFeatureId { get; set; }
 
-    public int CatalogItemId { get; set; }
+    public int PrimaryCatalogItemId { get; set; }
 
     public string? Value { get; set; }
 }
@@ -57,19 +57,19 @@ public class CatalogFeatureValueDto
 public class CatalogItemVariantDto
 {
 
-    public string? VariantImage { get; set; }
+    public string? variantImage { get; set; }
 
-    public string? VariantKey { get; set; }
+    public string? variantKey { get; set; }
 
-    public string? VarianKeyAdjust { get; set; }
+    public string? varianKeyAdjust { get; set; }
+    
+    public decimal? variantFinallPrice { get; set; }
+    public decimal? variantSellPrice { get; set; }
 
-    public decimal? VariantFinallPrice { get; set; }
-    public decimal? VariantSellPrice { get; set; }
-
-    public string? VariantKeyName { get; set; }
+    public string? variantKeyName { get; set; }
 
 
-    public string? VariantKeyValue { get; set; }
+    public string? variantKeyValue { get; set; }
 
 
 }

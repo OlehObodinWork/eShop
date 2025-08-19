@@ -854,7 +854,7 @@
             "format": "int32"
           },
           "primaryCatalogItem": {
-            "$ref": "#/components/schemas/PrimaryCatalogItem"
+            "$ref": "#/components/schemas/PrimaryCatalogItem2"
           }
         }
       },
@@ -873,7 +873,7 @@
             "format": "int32"
           },
           "primaryCatalogItem": {
-            "$ref": "#/components/schemas/PrimaryCatalogItem"
+            "$ref": "#/components/schemas/PrimaryCatalogItem2"
           }
         }
       },
@@ -1258,7 +1258,7 @@
             "format": "int32"
           },
           "primaryCatalogItem": {
-            "$ref": "#/components/schemas/PrimaryCatalogItem"
+            "$ref": "#/components/schemas/PrimaryCatalogItem2"
           }
         }
       },
@@ -1277,7 +1277,7 @@
             "format": "int32"
           },
           "primaryCatalogItem": {
-            "$ref": "#/components/schemas/PrimaryCatalogItem"
+            "$ref": "#/components/schemas/PrimaryCatalogItem2"
           }
         }
       }

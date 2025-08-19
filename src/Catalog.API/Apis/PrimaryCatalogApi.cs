@@ -84,7 +84,7 @@ public static class PrimaryCatalogApi
         }
 
         var item = await services.Context.PrimaryCatalogItems.Include((ci) => ci.PrimaryCatalogItemVariants).SingleOrDefaultAsync(ci => ci.Id == id);
-
+        
         if (item == null)
         {
             return TypedResults.NotFound();
