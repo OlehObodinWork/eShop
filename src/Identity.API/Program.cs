@@ -35,10 +35,6 @@ builder.Services.AddIdentityServer(options =>
 .AddAspNetIdentity<ApplicationUser>()
 // TODO: Not recommended for production - you need to store your key material somewhere secure
 .AddDeveloperSigningCredential();
-builder.Services.Configure<IdentityOptions>(options =>
-{
-    options.ClaimsIdentity.RoleClaimType = "role";
-});
 
 builder.Services.AddTransient<IProfileService, ProfileService>();
 builder.Services.AddTransient<ILoginService<ApplicationUser>, EFLoginService>();
