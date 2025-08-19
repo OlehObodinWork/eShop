@@ -1,0 +1,66 @@
+﻿@using Microsoft.FluentUI.AspNetCore.Components
+@implements IDialogContentComponent
+@using System.Net.Http
+@using System.Text
+@inject HttpClient Http
+@using Microsoft.Extensions.Configuration 
+@inject IConfiguration Configuration
+@rendermode InteractiveServer
+<FluentMessageBarProvider Section="" MaxMessageCount="1" />
+
+@* <p>Your lastname is @Content.Lastname and you are @Content.Age years young </p> *@
+
+<FluentTextField @bind-Value="@SKU" Label="Add" Immediate="true"></FluentTextField>
+<FluentTextField @bind-Value=value2 Label="Label"></FluentTextField>
+<FluentDialogFooter>
+    <FluentButton Appearance="Appearance.Accent"  Disabled=@_disabledButton OnClick="OnAddButtonClick">Add</FluentButton>
+    <FluentButton Appearance="Appearance.Neutral" OnClick="OnCancelButtonClick">Cancel</FluentButton>
+</FluentDialogFooter>
+
+@* <FluentTextField @bind-Value="@Content.Lastname">Your lastname:</FluentTextField>
+<FluentNumberField @bind-Value="@Content.Age">Your age:</FluentNumberField> *@
+@* @if (Dialog != null)
+{
+    <FluentStack Orientation="Orientation.Vertical" Style="border: 1px solid red; padding: 10px">
+        <span>This section is visible only when component is hosted inside a Dialog</span>
+        <FluentButton OnClick="@(() => ToggleDialogPrimaryActionButton(true))">Enable Dialog Primary Action</FluentButton>
+        <FluentButton OnClick="@(() => ToggleDialogPrimaryActionButton(false))">Disable Dialog Primary Action</FluentButton>
+    </FluentStack>
+} *@
+
+@code {
+    // [Parameter]
+    // public SimplePerson Content { get; set; } = default!;
+
+    [CascadingParameter]
+    public FluentDialog? Dialog { get; set; }
+
+    string? value2;
+    private string? _SKU;
+    private bool _disabledButton = true;
+    public string? SKU { 
+        get => _SKU; 
+        set 
+        { 
+            _SKU = value; Console.WriteLine(value);
+            if (value != null && value.Length > 0) _disabledButton = false;
+            else _disabledButton = true;
+            // Dialog!.TogglePrimaryActionButton(false);
+        } 
+    }
+
+    private async void OnAddButtonClick() {
+        //var content = new StringContent($"{{'SKU': '{SKU}', 'api-version': '1'}}", Encoding.UTF8, "application/json");
+        var url = $"{Configuration["Endpoints:CatalogAPI"]}/api/primary-catalog/items/sync?SKU={SKU}&api-version=1";
+        var response = await Http.GetAsync(url);
+        var result = await response.Content.ReadAsStringAsync();
+        Console.WriteLine(result);
+        await Dialog!.CloseAsync();
+    }
+
+    private async void OnCancelButtonClick()
+    {
+        await Dialog!.CloseAsync();
+        // Dialog!.TogglePrimaryActionButton(enable);
+    }
+}

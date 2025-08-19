@@ -1,0 +1,80 @@
+﻿@using Microsoft.FluentUI.AspNetCore.Components
+@implements IDialogContentComponent
+@using System.Net.Http
+@using System.Text
+@inject HttpClient Http
+@using Microsoft.Extensions.Configuration 
+@using System.Text.Json
+@inject IConfiguration Configuration
+<FluentMessageBarProvider Section="" MaxMessageCount="1" />
+
+@* <p>Your lastname is @Content.Lastname and you are @Content.Age years young </p> *@
+<FluentTextField @bind-Value="@FeatureTitle" Immediate="true">Title</FluentTextField>
+<FluentTextField @bind-Value="@IconName" Immediate="true">Icon</FluentTextField>
+
+
+<FluentDialogFooter>
+    <FluentButton Appearance="Appearance.Accent" Disabled=@_disabledButton OnClick="OnAddButtonClick">Add</FluentButton>
+    <FluentButton Appearance="Appearance.Neutral" OnClick="OnCancelButtonClick">Cancel</FluentButton>
+</FluentDialogFooter>
+
+@* <FluentTextField @bind-Value="@Content.Lastname">Your lastname:</FluentTextField>
+<FluentNumberField @bind-Value="@Content.Age">Your age:</FluentNumberField> *@
+@* @if (Dialog != null)
+{
+    <FluentStack Orientation="Orientation.Vertical" Style="border: 1px solid red; padding: 10px">
+        <span>This section is visible only when component is hosted inside a Dialog</span>
+        <FluentButton OnClick="@(() => ToggleDialogPrimaryActionButton(true))">Enable Dialog Primary Action</FluentButton>
+        <FluentButton OnClick="@(() => ToggleDialogPrimaryActionButton(false))">Disable Dialog Primary Action</FluentButton>
+    </FluentStack>
+} *@
+
+@code {
+    // [Parameter]
+    // public SimplePerson Content { get; set; } = default!;
+
+    [CascadingParameter]
+    public FluentDialog? Dialog { get; set; }
+    private bool _disabledButton = true;
+    private CatalogFeatureDto? CatalogFeature { get; set; }
+    private string? _IconName = "";
+    public string? IconName { 
+        get => _IconName;
+        set 
+        { 
+            _IconName = value;
+            if (_IconName?.Length > 0 && _FeatureTitle?.Length > 0) _disabledButton = false;
+            else _disabledButton = true;
+        } 
+    }
+
+    private string? _FeatureTitle;
+    public string? FeatureTitle
+    {
+        get => _FeatureTitle;
+        set
+        {
+            _FeatureTitle = value;
+            if (_IconName?.Length > 0 && _FeatureTitle?.Length > 0) _disabledButton = false;
+            else _disabledButton = true;
+        }
+    }
+
+    private async void OnAddButtonClick() {
+        //var content = new StringContent($"{{'Icon': '{_IconName}','Title': '{_FeatureTitle}' 'api-version': '1'}}", Encoding.UTF8, "application/json");
+        var url = $"{Configuration["Endpoints:CatalogAPI"]}/api/catalog/features?api-version=1";
+        CatalogFeature = new CatalogFeatureDto { Icon = IconName, Title = FeatureTitle };
+        var json = JsonSerializer.Serialize(CatalogFeature);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        var response = await Http.PostAsync(url, content);
+        var result = await response.Content.ReadAsStringAsync();
+        Console.WriteLine(result);
+        await Dialog!.CloseAsync();
+    }
+
+    private async void OnCancelButtonClick()
+    {
+        await Dialog!.CloseAsync();
+        // Dialog!.TogglePrimaryActionButton(enable);
+    }
+}

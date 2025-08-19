@@ -1,0 +1,128 @@
+﻿@using Microsoft.FluentUI.AspNetCore.Components
+@using eShop.WebApp.Components.Pages.Admin
+@inject ThemeState ThemeState
+@rendermode InteractiveServer
+@inject IDialogService DialogService
+@inject NavigationManager NavManager
+
+<FluentNavMenu Width="250">
+    @if (ThemeState.IsDark)
+    {
+        <a class="logo logo-header" href="/admin">
+
+            <img id="logo" alt="Lazy Loading" src="@(ThemeState.IsDark ? "images/logofordark.png" : "images/logoforlight.png")" class="logo logo-header" />
+
+        </a>
+    }
+    else
+    {
+        <a class="logo logo-header" href="/admin">
+
+            <img id="logo" alt="Lazy Loading" src="images/logoforlight.png" class="logo logo-header" />
+
+        </a>
+    }
+
+    @*  <FluentNavLink Href="/product-table" >Item 1</FluentNavLink>
+            <FluentNavLink OnClick=@(() => HandleOnNavClick("ProductEdit"))>Item 1</FluentNavLink> *@
+    <FluentMenuButton @ref=menubuttonm Text="+ Add New" IconStart="null" OnMenuChanged="HandleOnMenuChanged">
+        <FluentMenuItem Id="AddProduct">Product</FluentMenuItem>
+        <FluentMenuItem Id="AddFeature">Feature</FluentMenuItem>
+    </FluentMenuButton>
+    <nav>
+        <ul>
+            <li>
+                <a @onclick='() => OnNavClick("/products")'>Products</a>
+            </li>
+            <li>
+                <a @onclick='() => OnNavClick("/features")'>Features</a>
+            </li>
+        </ul>
+
+
+    </nav>
+</FluentNavMenu>
+@code {
+    private string? showSection;
+    private FluentMenuButton menubuttonm = new();
+
+    private void HandleOnNavClick(string name)
+    {
+        showSection = name;
+    }
+
+    private async Task HandleOnMenuChanged(MenuChangeEventArgs args)
+    {
+        Console.WriteLine("menu changed");
+        switch (args.Id)
+        {
+            case "AddProduct":
+                await OpenDialogAsync(args.Value);
+                break;
+            case "AddFeature":
+                await OpenDialogFeatureAsync(args.Value);
+                break;
+        }
+
+
+
+    }
+
+
+
+
+    private async Task OpenDialogAsync(string? title)
+    {
+        Console.WriteLine($"Open dialog centered");
+
+        DialogParameters parameters = new()
+        {
+            Title = title,
+            Width = "500px",
+            TrapFocus = true,
+            Modal = true,
+            PreventScroll = true,
+
+        };
+
+
+
+        IDialogReference dialog = await DialogService.ShowDialogAsync<AddProductDialog>(parameters);
+        DialogResult? result = await dialog.Result;
+
+
+        Console.WriteLine($"Dialog closed - Canceled: {result.Cancelled}");
+
+    }
+
+
+    private async Task OpenDialogFeatureAsync(string? title)
+    {
+        Console.WriteLine($"Open dialog centered");
+
+        DialogParameters parameters = new()
+        {
+            Title = title,
+            Width = "500px",
+            TrapFocus = true,
+            Modal = true,
+            PreventScroll = true,
+
+        };
+
+
+
+        IDialogReference dialog = await DialogService.ShowDialogAsync<AddFeatureDialog>(parameters);
+        DialogResult? result = await dialog.Result;
+
+
+        Console.WriteLine($"Dialog closed - Canceled: {result.Cancelled}");
+
+    }
+
+    public void OnNavClick(string nav)
+    {
+        NavManager.NavigateTo(nav);
+    }
+
+}

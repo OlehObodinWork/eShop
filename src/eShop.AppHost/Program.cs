@@ -1,4 +1,5 @@
-﻿using Azure.Identity;
+﻿using Aspire.Hosting;
+using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using eShop.AppHost;
 
@@ -24,10 +25,14 @@ var secretClient = new SecretClient(keyVaultUrl, new DefaultAzureCredential());
 KeyVaultSecret dbUserSecret = await secretClient.GetSecretAsync("DbUserLocal");
 KeyVaultSecret dbPasswordSecret = await secretClient.GetSecretAsync("DbPasswordLocal");
 
+// Replace this line:
 var username = dbUserSecret.Value;
 var password = dbPasswordSecret.Value;
 
-var postgres = builder.AddPostgres("postgres")
+var dbUserParameter = builder.AddParameter("DbUserLocal", username);
+var dbPasswordParameter = builder.AddParameter("DbPasswordLocal", password);
+
+var postgres = builder.AddPostgres("postgres", dbUserParameter, dbPasswordParameter)
     .WithImage("ankane/pgvector")
     .WithImageTag("latest")
     .WithLifetime(ContainerLifetime.Persistent)

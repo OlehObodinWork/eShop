@@ -1,7 +1,9 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.IdentityModel.Tokens.Jwt;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.IdentityModel.Tokens;
 
 namespace eShop.ServiceDefaults;
 
@@ -39,14 +41,14 @@ public static class AuthenticationExtensions
             options.RequireHttpsMetadata = false;
             options.Audience = audience;
             
-#if DEBUG
             //Needed if using Android Emulator Locally. See https://learn.microsoft.com/en-us/dotnet/maui/data-cloud/local-web-services?view=net-maui-8.0#android
-            options.TokenValidationParameters.ValidIssuers = [identityUrl, "https://10.0.2.2:5243"];
-#else
-            options.TokenValidationParameters.ValidIssuers = [identityUrl];
-#endif
-            
-            options.TokenValidationParameters.ValidateAudience = false;
+
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",
+                ValidIssuers = [identityUrl, "https://10.0.2.2:5243"],
+                ValidateAudience = false
+            };
         });
 
         services.AddAuthorization();
