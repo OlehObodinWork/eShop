@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Pgvector.EntityFrameworkCore;
 
@@ -232,6 +233,8 @@ public static class PrimaryCatalogApi
         return TypedResults.Ok(new PaginatedItems<PrimaryCatalogItem>(pageIndex, pageSize, totalItems, itemsOnPage));
     }
 
+    [Authorize(Roles = "Admin")]
+
     public static async Task<Results<Created, NotFound<string>>> UpdateItem(
         [AsParameters] CatalogServices services,
         PrimaryCatalogItem productToUpdate)
@@ -268,6 +271,7 @@ public static class PrimaryCatalogApi
         }
         return TypedResults.Created($"/api/primary-catalog/items/{productToUpdate.Id}");
     }
+    [Authorize(Roles = "Admin")]
 
     public static async Task<Created> CreateItem(
         [AsParameters] CatalogServices services,
@@ -293,6 +297,7 @@ public static class PrimaryCatalogApi
 
         return TypedResults.Created($"/api/primary-catalog/items/{item.Id}");
     }
+    [Authorize(Roles = "Admin")]
 
     public static async Task<Results<NoContent, NotFound>> DeleteItemById(
         [AsParameters] CatalogServices services,
@@ -309,6 +314,8 @@ public static class PrimaryCatalogApi
         await services.Context.SaveChangesAsync();
         return TypedResults.NoContent();
     }
+
+    [Authorize(Roles = "Admin")]
 
     public static async Task<Results<Created, Ok>> SyncItem([AsParameters] CatalogServices services, string SKU)
     {
@@ -404,6 +411,7 @@ public static class PrimaryCatalogApi
     public static string GetFullPath(string contentRootPath, string pictureFileName) =>
         Path.Combine(contentRootPath, "Pics", pictureFileName);
 
+    [Authorize(Roles = "Admin")]
 
     public static async Task<Created> CreateFeature(
         [AsParameters] CatalogServices services,
@@ -424,6 +432,7 @@ public static class PrimaryCatalogApi
         return TypedResults.Created($"/api/primary-catalog/features/{feature.Id}");
     }
 
+    [Authorize(Roles = "Admin")]
 
     public static async Task<Results<Created, NotFound<string>>> UpdateFeatureValue(
        [AsParameters] CatalogServices services,
@@ -445,6 +454,7 @@ public static class PrimaryCatalogApi
         return TypedResults.Created($"/api/primary-catalog/catalog-features-values/{catalogFeatureValue.Id}");
     }
 
+    [Authorize(Roles = "Admin")]
 
     public static async Task<Results<Ok<PaginatedItems<PrimaryCatalogFeature>>, BadRequest<string>>> GetAllFeatures(
     [AsParameters] PaginationRequest paginationRequest,
@@ -464,6 +474,8 @@ public static class PrimaryCatalogApi
 
         return TypedResults.Ok(new PaginatedItems<PrimaryCatalogFeature>(pageIndex, pageSize, totalItems, featuresOnPage));
     }
+
+    [Authorize(Roles = "Admin")]
 
     public static async Task<Created> AddFeatureToCatalogItem([AsParameters] CatalogServices services, PrimaryCatalogFeatureValue catalogFeatureValue)
     {
