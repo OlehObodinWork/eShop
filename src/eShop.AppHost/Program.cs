@@ -33,11 +33,11 @@ var dbUserParameter = builder.AddParameter("DbUserLocal", username);
 var dbPasswordParameter = builder.AddParameter("DbPasswordLocal", password);
 
 var postgres = builder.AddPostgres("postgres", dbUserParameter, dbPasswordParameter, null)
-    .WithPgAdmin()
     .WithImage("ankane/pgvector")
     .WithImageTag("latest")
     .WithLifetime(ContainerLifetime.Persistent)
-    .WithBindMount(@"C:\Users\oleho\binds\eShop", "/var/lib/postgresql/data");
+    .WithBindMount(@"C:\Users\oleho\binds\eShop", "/var/lib/postgresql/data")
+    .WithPgAdmin();
    
 var catalogDb = postgres.AddDatabase("catalogdb");
 var identityDb = postgres.AddDatabase("identitydb");
@@ -64,7 +64,7 @@ redis.WithParentRelationship(basketApi);
 var catalogApi = builder.AddProject<Projects.Catalog_API>("catalog-api")
     .WithReference(rabbitMq).WaitFor(rabbitMq)
     .WithReference(catalogDb)
-     .WaitFor(postgres);
+    .WaitFor(postgres);
 
 var orderingApi = builder.AddProject<Projects.Ordering_API>("ordering-api")
     .WithReference(rabbitMq).WaitFor(rabbitMq)
