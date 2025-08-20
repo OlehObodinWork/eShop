@@ -16,8 +16,8 @@ var app = builder.Build();
 app.MapDefaultEndpoints();
 
 app.UseStatusCodePages();
-
 app.MapCatalogApi();
+app.MapCatalogPrimaryApiV1();
 
 app.UseDefaultOpenApi();
 app.Run();
