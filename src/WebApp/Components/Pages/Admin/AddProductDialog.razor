@@ -51,7 +51,7 @@
 
     private async void OnAddButtonClick() {
         //var content = new StringContent($"{{'SKU': '{SKU}', 'api-version': '1'}}", Encoding.UTF8, "application/json");
-        var url = $"{Configuration["Endpoints:CatalogAPI"]}/api/primary-catalog/items/sync?SKU={SKU}&api-version=1";
+		var url = $"{Configuration["Endpoints:CJDropahipAPI"]}/api/cj-catalog/items/sync?SKU={SKU}&api-version=1";
         var response = await Http.GetAsync(url);
         var result = await response.Content.ReadAsStringAsync();
         Console.WriteLine(result);
