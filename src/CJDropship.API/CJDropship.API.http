@@ -1,0 +1,6 @@
+@CJDropship.API_HostAddress = http://localhost:5163
+
+GET {{CJDropship.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

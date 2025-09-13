@@ -6,16 +6,12 @@ public class CatalogServices(
     CatalogContext context,
     [FromServices] ICatalogAI catalogAI,
     [FromServices] IPrimaryCatalogAI primaryCatalogAI,
-    [FromServices] CJCatalog cJCatalog,
-    [FromServices] TokenService tokenService,
     IOptions<CatalogOptions> options,
     ILogger<CatalogServices> logger,
     [FromServices] ICatalogIntegrationEventService eventService)
 {
-    public CJCatalog CJCatalog { get; } = cJCatalog;
-    public CatalogContext Context { get; } = context;
 
-    public TokenService TokenService { get; } = tokenService;
+    public CatalogContext Context { get; } = context;
     public ICatalogAI CatalogAI { get; } = catalogAI;
 
     public IPrimaryCatalogAI PrimaryCatalogAI { get; } = primaryCatalogAI;

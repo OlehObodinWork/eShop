@@ -71,8 +71,8 @@ public class PrimaryCatalogItem
     public string PictureFileName { get; set; }
 
 
-    [JsonPropertyName("productImageSet")]
-    public ICollection<PrimaryCatalogOriginalImages> PrimaryCatalogOriginalImages { get; } = new List<PrimaryCatalogOriginalImages>();
+    [JsonIgnore]
+    public ICollection<PrimaryCatalogOriginalImages> PrimaryCatalogOriginalImages { get; set; } 
 
     public ICollection<PrimaryCatalogEnhancedImages> PrimaryCatalogEnhancedImages { get; } = new List<PrimaryCatalogEnhancedImages>();
 
@@ -80,8 +80,7 @@ public class PrimaryCatalogItem
     public List<PrimaryCatalogKit> PrimaryCatalogKits { get; set; }
 
     
-    public ICollection<PrimaryCatalogItemVariant> PrimaryCatalogItemVariants { get; } = new List<PrimaryCatalogItemVariant>();
-
+    public ICollection<PrimaryCatalogItemVariant> PrimaryCatalogItemVariants { get; set; }
 
     [JsonPropertyName("packingWeight")]
     public string PackingWeight { get; set; }

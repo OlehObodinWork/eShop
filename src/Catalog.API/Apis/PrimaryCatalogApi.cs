@@ -38,7 +38,6 @@ public static class PrimaryCatalogApi
         api.MapPost("/items", CreateItem);
 
         api.MapDelete("/items/{id:int}", DeleteItemById);
-        api.MapGet("items/sync", SyncItem);
 
 
         api.MapPost("/features", CreateFeature);
@@ -313,84 +312,6 @@ public static class PrimaryCatalogApi
         services.Context.PrimaryCatalogItems.Remove(item);
         await services.Context.SaveChangesAsync();
         return TypedResults.NoContent();
-    }
-
-    [Authorize(Roles = "Admin")]
-
-    public static async Task<Results<Created, Ok>> SyncItem([AsParameters] CatalogServices services, string SKU)
-    {
-        var url = $"https://developers.cjdropshipping.com/api2.0/v1/product/query?productSku={SKU}";
-
-        var token = "";
-        if (services.TokenService.token != null)
-        {
-            token = services.TokenService.token;
-        }
-        else
-        {
-            token = await services.TokenService.GetTokenAsync();
-        }
-
-        services.Logger.LogInformation(token);
-
-        var result = await services.CJCatalog.GetCatalogItemAsync( url, services.Logger, token);
-        var item = services.Context.PrimaryCatalogItems.SingleOrDefault(x => x.ProductSKU == SKU);
-
-
-        //Type type = result.Item.GetType();
-        //PropertyInfo[] properties = type.GetProperties();
-
-        //foreach (var property in properties)
-        //{
-        //    var value = property.GetValue(result.Item);
-        //    services.Logger.LogInformation("{PropertyName}: {PropertyValue}", property.Name, value);
-        //}
-
-        if (item != default && item.ListedNum != result.Item.ListedNum)
-        {
-            item.ListedNum = result.Item.ListedNum;
-            await services.Context.SaveChangesAsync();
-            return TypedResults.Ok();
-        }
-        if (item == default)
-        {
-            foreach (var variant in result.Variants)
-            {
-                variant.PrimaryCatalogItemId = result.Item.Id;
-                variant.VarianPriceAdjustments();
-                variant.VarianKeyAdjusted();
-                result.Item.PrimaryCatalogItemVariants.Add(variant);
-                services.Context.PrimaryCatalogItemVariants.Add(variant);
-            }
-
-            foreach (var image in result.Images)
-            {
-                image.PrimaryCatalogItemId = result.Item.Id;
-                result.Item.PrimaryCatalogOriginalImages.Add(image);
-                services.Context.PrimaryCatalogOriginalImages.Add(image);
-            }
-
-
-            // var item = new CatalogItem
-            //{
-            //    Id = product.Id,
-            //    CatalogBrandId = product.CatalogBrandId,
-            //    CatalogTypeId = product.CatalogTypeId,
-            //    Description = product.Description,
-            //    Name = product.Name,
-            //    PictureFileName = product.PictureFileName,
-            //    Price = product.Price,
-            //    AvailableStock = product.AvailableStock,
-            //    RestockThreshold = product.RestockThreshold,
-            //    MaxStockThreshold = product.MaxStockThreshold
-            //};
-            result.Item.Embedding = await services.PrimaryCatalogAI.GetEmbeddingAsync(item);
-
-            services.Context.PrimaryCatalogItems.Add(result.Item);
-            await services.Context.SaveChangesAsync();
-            return TypedResults.Created($"/api/primary-catalog/{result.Item.Id}");
-        }
-        return TypedResults.Ok();
     }
 
 

@@ -1,4 +1,5 @@
 ﻿using Catalog.API.Services;
+using eShop.Catalog.API.IntegrationEvents.Events;
 using eShop.Catalog.API.Services;
 using Microsoft.Extensions.AI;
 using OllamaSharp;
@@ -33,6 +34,7 @@ public static class Extensions
         builder.Services.AddTransient<ICatalogIntegrationEventService, CatalogIntegrationEventService>();
 
         builder.AddRabbitMqEventBus("eventbus")
+               .AddSubscription<CJCatalogItemGrabbedIntegrationEvent, CJCatalogItemGrabbedIntegrationEventHandler>()
                .AddSubscription<OrderStatusChangedToAwaitingValidationIntegrationEvent, OrderStatusChangedToAwaitingValidationIntegrationEventHandler>()
                .AddSubscription<OrderStatusChangedToPaidIntegrationEvent, OrderStatusChangedToPaidIntegrationEventHandler>();
 
@@ -52,7 +54,5 @@ public static class Extensions
 
         builder.Services.AddScoped<ICatalogAI, CatalogAI>();
         builder.Services.AddScoped<IPrimaryCatalogAI, PrimaryCatalogAI>();
-        builder.Services.AddScoped<CJCatalog>();
-        builder.Services.AddScoped<TokenService>();
     }
 }

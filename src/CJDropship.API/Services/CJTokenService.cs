@@ -1,50 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Json;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using CJDropship.API.Services.DTO;
+using CJDropship.API.Services.Interfaces;
 
-namespace eShop.ServiceDefaults
+namespace CJDropship.API.Services
 {
-    public static class CJTokenExtension
-    {
 
-        public static IServiceCollection AddCJAuth(this IHostApplicationBuilder builder)
-        {
-            var services = builder.Services;
-
-            services.AddSingleton<TokenService>();
-            return services;
-        }
-    }
-
-
-
-    public interface ITokenService
-    {
-        Task<string?> GetTokenAsync();
-    }
-
-    public class TokenService : ITokenService
+    public class CJTokenService : ITokenService
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ILogger<TokenService> _logger;
-        public string? token;
+        private readonly ILogger<CJTokenService> _logger;
+        public string? token { get; set; }  
         public string? refreshToken;
         private readonly IConfiguration _configuration;
         public DateTime tokenExpiration;
 
-        public TokenService(IHttpClientFactory httpClientFactory, ILogger<TokenService> logger, IConfiguration configuration)
+        public CJTokenService(IHttpClientFactory httpClientFactory, ILogger<CJTokenService> logger, IConfiguration configuration)
         {
             _httpClientFactory = httpClientFactory;
             _logger = logger;
@@ -78,12 +52,11 @@ namespace eShop.ServiceDefaults
             var email = await secretClient.GetSecretAsync("CJEmail");
             var key = await secretClient.GetSecretAsync("CJKey");
 
-            
-            Console.WriteLine(key.Value);
             var credentials = new { email = email.Value.Value, password = key.Value.Value };
 
             var jsonCredentials = JsonSerializer.Serialize(credentials);
-            var response = await client.PostAsync("https://developers.cjdropshipping.com/api2.0/v1/authentication/getAccessToken", new StringContent(jsonCredentials, Encoding.UTF8, "application/json"));
+            var url = "https://developers.cjdropshipping.com/api2.0/v1/authentication/getAccessToken";
+            var response = await client.PostAsync(url, new StringContent(jsonCredentials, Encoding.UTF8, "application/json"));
             response.EnsureSuccessStatusCode();
 
 
@@ -104,8 +77,8 @@ namespace eShop.ServiceDefaults
                     Console.WriteLine("Data field not found.");
                 }
             }
-            var tokenJson = JsonSerializer.Deserialize<TokenResponse>(data);
-            Console.WriteLine(tokenJson);
+            var tokenJson = JsonSerializer.Deserialize<TokenResponseDTO>(data);
+ 
             if (tokenJson != null)
             {
                 //tokenExpiration = DateTime.UtcNow.AddSeconds(tokenJson.ExpiresIn);
@@ -116,18 +89,4 @@ namespace eShop.ServiceDefaults
             return null;
         }
     }
-
-    public class TokenResponse
-    {
-        [JsonPropertyName("accessToken")]
-        public string? AccessToken { get; set; }
-
-        [JsonPropertyName("accessTokenExpiryDate")]
-        public string? AccessTokenExpirity { get; set; }
-        public int ExpiresIn { get; set; }
-
-        [JsonPropertyName("refreshToken")]
-        public string? RefreshToken { get; set; }
-    }
-
 }
