@@ -115,5 +115,10 @@ namespace Catalog.API.Model
             }
         }
 
+        public override string ToString()
+        {
+            return $"Origin: {VariantImageOrigin}, Enhanced: {VarianImageEnhanced}, Price: {VariantFinallPrice}";
+        }
+
     }
 }

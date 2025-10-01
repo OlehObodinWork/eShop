@@ -71,6 +71,8 @@ public class CatalogItemVariantDto
 
     public string? variantKeyValue { get; set; }
 
+    public string? varianImageEnhanced { get; set; }
+
 
 }
 
