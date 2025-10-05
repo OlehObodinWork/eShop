@@ -42,8 +42,8 @@ public static class PrimaryCatalogApi
 
         api.MapPost("/features", CreateFeature);
         api.MapGet("/features", GetAllFeatures);
-        api.MapPost("/catalog-features-values/{catalogId:int?}", AddFeatureToCatalogItem);
-        api.MapGet("/catalog-features-values/{catalogId:int?}", GetFeaturesByCatalogId);
+        api.MapPost("/catalog-features-values/", AddFeatureToCatalogItem);
+        api.MapGet("/catalog-features-values/", GetFeaturesByCatalogId);
         return app;
     }
 
@@ -232,7 +232,7 @@ public static class PrimaryCatalogApi
         return TypedResults.Ok(new PaginatedItems<PrimaryCatalogItem>(pageIndex, pageSize, totalItems, itemsOnPage));
     }
 
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
 
     public static async Task<Results<Created, NotFound<string>>> UpdateItem(
         [AsParameters] CatalogServices services,
@@ -270,7 +270,7 @@ public static class PrimaryCatalogApi
         }
         return TypedResults.Created($"/api/primary-catalog/items/{productToUpdate.Id}");
     }
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
 
     public static async Task<Created> CreateItem(
         [AsParameters] CatalogServices services,
@@ -296,7 +296,7 @@ public static class PrimaryCatalogApi
 
         return TypedResults.Created($"/api/primary-catalog/items/{item.Id}");
     }
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
 
     public static async Task<Results<NoContent, NotFound>> DeleteItemById(
         [AsParameters] CatalogServices services,
@@ -332,7 +332,7 @@ public static class PrimaryCatalogApi
     public static string GetFullPath(string contentRootPath, string pictureFileName) =>
         Path.Combine(contentRootPath, "Pics", pictureFileName);
 
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
 
     public static async Task<Created> CreateFeature(
         [AsParameters] CatalogServices services,
@@ -353,7 +353,7 @@ public static class PrimaryCatalogApi
         return TypedResults.Created($"/api/primary-catalog/features/{feature.Id}");
     }
 
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
 
     public static async Task<Results<Created, NotFound<string>>> UpdateFeatureValue(
        [AsParameters] CatalogServices services,
@@ -375,7 +375,7 @@ public static class PrimaryCatalogApi
         return TypedResults.Created($"/api/primary-catalog/catalog-features-values/{catalogFeatureValue.Id}");
     }
 
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
 
     public static async Task<Results<Ok<PaginatedItems<PrimaryCatalogFeature>>, BadRequest<string>>> GetAllFeatures(
     [AsParameters] PaginationRequest paginationRequest,
@@ -396,7 +396,7 @@ public static class PrimaryCatalogApi
         return TypedResults.Ok(new PaginatedItems<PrimaryCatalogFeature>(pageIndex, pageSize, totalItems, featuresOnPage));
     }
 
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
 
     public static async Task<Created> AddFeatureToCatalogItem([AsParameters] CatalogServices services, PrimaryCatalogFeatureValue catalogFeatureValue)
     {
@@ -417,19 +417,43 @@ public static class PrimaryCatalogApi
         return TypedResults.Ok();
     }
 
-    public static async Task<Results<Ok<List<PrimaryCatalogFeatureValue>>, NotFound, BadRequest<string>>> GetFeaturesByCatalogId(
+
+    public class FeatureValueDto
+    {
+        public int Id { get; set; }
+        public string Value { get; set; }
+        public int FeatureId { get; set; }
+        public string FeatureTitle { get; set; }
+        public string FeatureIcon { get; set; }
+    }
+
+    public static async Task<Results<Ok<List<FeatureValueDto>>, NotFound, BadRequest<string>>> GetFeaturesByCatalogId(
         [AsParameters] CatalogServices services,
         int id)
+
     {
-        var features = await services.Context.PrimaryCatalogFeatureValues
-            .Where(cf => id == cf.PrimaryCatalogItemId).ToListAsync();
+       
+    var features = await services.Context.PrimaryCatalogFeatureValues
+            .Where(cf => id == cf.PrimaryCatalogItemId)
+            .Include(cf => cf.PrimaryCatalogFeature)
+            .ToListAsync();
+
+        var result = features.Select(fv => new FeatureValueDto
+        {
+            Id = fv.Id,
+            Value = fv.Value,
+            FeatureId = fv.PrimaryCatalogFeatureId,
+            FeatureTitle = fv.PrimaryCatalogFeature.Title,
+            FeatureIcon = fv.PrimaryCatalogFeature.Icon
+        }).ToList();
+
 
         if (features == null)
         {
             return TypedResults.NotFound();
         }
 
-        return TypedResults.Ok(features);
+        return TypedResults.Ok(result);
     }
 
 }

@@ -16,6 +16,7 @@ namespace eShop.Catalog.API.Model
     public class PrimaryCatalogFeatureValue
     {
         public int Id { get; set; }
+
         public int PrimaryCatalogItemId { get; set; }
 
         [JsonIgnore]

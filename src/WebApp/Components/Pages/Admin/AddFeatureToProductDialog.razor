@@ -14,12 +14,14 @@
                 Label="Feature"
                 Autofocus="true"
                 Items="@PrimaryCatalogFeatures"
-                OptionText="@(i => i.Title)"
-                @bind-Value="@FeatureId"
+				OptionValue="@(i => i!.Id.ToString())"
+                OptionText="@(i => $"{i!.Id} {i.Title}")"
+				@bind-value="@FeatureId"
                 Immediate
                 ImmediateDelay="100">
     <OptionTemplate>
-        <span class=@($"fa {context!.Icon}")></span>
+        <span class=@($"fa-solid {context!.Icon}")></span>
+		@context.Id
         @context.Title
     </OptionTemplate>
 </FluentCombobox>
@@ -46,7 +48,7 @@
 
     public CatalogFeatureDto? PrimaryCatalogFeature { get; set; }
 
-    public CatalogFeatureValueDto? PrimaryCatalogFeatureValue { get; set; }
+	public PrimaryCatalogItemFeaturesValueDTO? PrimaryCatalogFeatureValue { get; set; }
 
     public class CatalogFeatureResponse
     {
@@ -108,21 +110,19 @@
     private async void OnAddButtonClick()
     {
         //var content = new StringContent($"{{'Icon': '{_IconName}','Title': '{_FeatureTitle}' 'api-version': '1'}}", Encoding.UTF8, "application/json");
-        var url = $"{Configuration["Endpoints:CatalogAPI"]}/api/primary-catalog/catalog-features-values?api-version=1";
+		var url = $"{Configuration["Endpoints:CatalogAPI"]}/api/primary-catalog/catalog-features-values?api-version={Configuration["Endpoints:ApiVersion"]}";
         
-        PrimaryCatalogFeatureValue = new CatalogFeatureValueDto 
+		PrimaryCatalogFeatureValue = new PrimaryCatalogItemFeaturesValueDTO
         { 
 
-            PrimaryCatalogFeatureId = int.Parse(FeatureId),
+            PrimaryCatalogFeatureId = int.Parse(FeatureId.Split(" ")[0]),
             PrimaryCatalogItemId = WebAppGlobalState.CatalogIdForFeature, 
             Value = FeatureValue 
         };
         var json = JsonSerializer.Serialize(PrimaryCatalogFeatureValue);
-        Console.WriteLine(json);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
         var response = await Http.PostAsync(url, content);
         var result = await response.Content.ReadAsStringAsync();
-        Console.WriteLine(result);
         await Dialog!.CloseAsync();         
     }
 
