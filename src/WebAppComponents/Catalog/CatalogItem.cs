@@ -44,7 +44,7 @@ public class CatalogFeatureDto
     public required string Title { get; set; }
 }
 
-public class CatalogFeatureValueDto
+public class PrimaryCatalogItemFeaturesValueDTO
 {
     public int PrimaryCatalogFeatureId { get; set; }
 
@@ -72,6 +72,16 @@ public class CatalogItemVariantDto
     public string? variantKeyValue { get; set; }
 
 
+}
+
+
+public record FeatureValueDto
+{
+    public int Id { get; set; }
+    public string? Value { get; set; }
+    public int FeatureId { get; set; }
+    public string? FeatureTitle { get; set; }
+    public string? FeatureIcon { get; set; }
 }
 
 
