@@ -1,4 +1,7 @@
-﻿using eShop.AppHost;
+﻿using Aspire.Hosting;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using eShop.AppHost;
 
 var builder = DistributedApplication.CreateBuilder(args);
 
@@ -9,14 +12,33 @@ var rabbitMq = builder.AddRabbitMQ("eventbus")
     .WithLifetime(ContainerLifetime.Persistent);
 
 
-var username = builder.AddParameter("dbuser", secret: true);
-var password = builder.AddParameter("dbpassword", secret: true);
+var keyVaultEndpoint = builder.Configuration["KeyVault:Endpoint"];
+if (string.IsNullOrEmpty(keyVaultEndpoint))
+{
+    throw new InvalidOperationException("KeyVault endpoint is not configured.");
+}
+var keyVaultUrl= new Uri(keyVaultEndpoint);
+var secretClient = new SecretClient(keyVaultUrl, new DefaultAzureCredential());
 
-var postgres = builder.AddPostgres("postgres")
+
+// Retrieve the database password from Key Vault
+KeyVaultSecret dbUserSecret = await secretClient.GetSecretAsync("DbUserLocal");
+KeyVaultSecret dbPasswordSecret = await secretClient.GetSecretAsync("DbPasswordLocal");
+
+// Replace this line:
+var username = dbUserSecret.Value;
+var password = dbPasswordSecret.Value;
+
+var dbUserParameter = builder.AddParameter("DbUserLocal", username);
+var dbPasswordParameter = builder.AddParameter("DbPasswordLocal", password);
+
+var postgres = builder.AddPostgres("postgres", dbUserParameter, dbPasswordParameter, null)
     .WithImage("ankane/pgvector")
     .WithImageTag("latest")
     .WithLifetime(ContainerLifetime.Persistent)
-    .WithBindMount(@"C:\Users\oleho\binds\eShop", "/var/lib/postgresql/data");
+    .WithBindMount(@"C:\Users\oleho\binds\eShop", "/var/lib/postgresql/data")
+    .WithPgAdmin();
+   
 var catalogDb = postgres.AddDatabase("catalogdb");
 var identityDb = postgres.AddDatabase("identitydb");
 var orderDb = postgres.AddDatabase("orderingdb");
@@ -27,30 +49,35 @@ var launchProfileName = ShouldUseHttpForEndpoints() ? "http" : "https";
 // Services
 var identityApi = builder.AddProject<Projects.Identity_API>("identity-api", launchProfileName)
     .WithExternalHttpEndpoints()
-    .WithReference(identityDb);
+    .WithReference(identityDb)
+    .WaitFor(postgres);
 
 var identityEndpoint = identityApi.GetEndpoint(launchProfileName);
 
 var basketApi = builder.AddProject<Projects.Basket_API>("basket-api")
     .WithReference(redis)
     .WithReference(rabbitMq).WaitFor(rabbitMq)
-    .WithEnvironment("Identity__Url", identityEndpoint);
+    .WithEnvironment("Identity__Url", identityEndpoint)
+    .WaitFor(postgres);
 redis.WithParentRelationship(basketApi);
 
 var catalogApi = builder.AddProject<Projects.Catalog_API>("catalog-api")
     .WithReference(rabbitMq).WaitFor(rabbitMq)
-    .WithReference(catalogDb);
+    .WithReference(catalogDb)
+    .WaitFor(postgres);
 
 var orderingApi = builder.AddProject<Projects.Ordering_API>("ordering-api")
     .WithReference(rabbitMq).WaitFor(rabbitMq)
     .WithReference(orderDb).WaitFor(orderDb)
     .WithHttpHealthCheck("/health")
-    .WithEnvironment("Identity__Url", identityEndpoint);
+    .WithEnvironment("Identity__Url", identityEndpoint)
+     .WaitFor(postgres);
 
 builder.AddProject<Projects.OrderProcessor>("order-processor")
     .WithReference(rabbitMq).WaitFor(rabbitMq)
     .WithReference(orderDb)
-    .WaitFor(orderingApi); // wait for the orderingApi to be ready because that contains the EF migrations
+    .WaitFor(orderingApi) // wait for the orderingApi to be ready because that contains the EF migrations
+    .WaitFor(postgres);
 
 builder.AddProject<Projects.PaymentProcessor>("payment-processor")
     .WithReference(rabbitMq).WaitFor(rabbitMq);
@@ -78,6 +105,7 @@ var webApp = builder.AddProject<Projects.WebApp>("webapp", launchProfileName)
     .WithReference(catalogApi)
     .WithReference(orderingApi)
     .WithReference(rabbitMq).WaitFor(rabbitMq)
+    .WaitFor(postgres)
     .WithEnvironment("IdentityUrl", identityEndpoint);
 
 // set to true if you want to use OpenAI
@@ -102,7 +130,8 @@ identityApi.WithEnvironment("BasketApiClient", basketApi.GetEndpoint("http"))
            .WithEnvironment("OrderingApiClient", orderingApi.GetEndpoint("http"))
            .WithEnvironment("WebhooksApiClient", webHooksApi.GetEndpoint("http"))
            .WithEnvironment("WebhooksWebClient", webhooksClient.GetEndpoint(launchProfileName))
-           .WithEnvironment("WebAppClient", webApp.GetEndpoint(launchProfileName));
+           .WithEnvironment("WebAppClient", webApp.GetEndpoint(launchProfileName))
+           .WaitFor(postgres);
 
 // Starting in Aspire 9.2, we can use the new DockerComposePublisher to generate a docker-compose file.
 // In order to do so, run 'dotnet run --publisher docker-compose --output-path ./docker-compose' to try it out.

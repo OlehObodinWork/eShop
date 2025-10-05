@@ -1,0 +1,134 @@
+﻿@using Microsoft.FluentUI.AspNetCore.Components
+@implements IDialogContentComponent
+@using System.Net.Http
+@using System.Text
+@inject HttpClient Http
+@using Microsoft.Extensions.Configuration
+@rendermode InteractiveServer
+@using System.Text.Json
+@inject IConfiguration Configuration
+@inject WebAppGlobalState WebAppGlobalState
+<FluentMessageBarProvider Section="" MaxMessageCount="1" />
+
+<FluentCombobox 
+                Label="Feature"
+                Autofocus="true"
+                Items="@PrimaryCatalogFeatures"
+                OptionText="@(i => i.Title)"
+                @bind-Value="@FeatureId"
+                Immediate
+                ImmediateDelay="100">
+    <OptionTemplate>
+        <span class=@($"fa {context!.Icon}")></span>
+        @context.Title
+    </OptionTemplate>
+</FluentCombobox>
+<FluentTextField @bind-Value="@FeatureValue" Label="Value" Immediate="true"></FluentTextField>
+@* <p>Selected Feature ID: @CatalogFeature!.Id</p> *@
+<FluentDialogFooter>
+    <FluentButton Appearance="Appearance.Accent" Disabled=@_disabledButton OnClick="OnAddButtonClick">Add</FluentButton>
+    <FluentButton Appearance="Appearance.Neutral" OnClick="OnCancelButtonClick">Cancel</FluentButton>
+</FluentDialogFooter>
+@* <FluentTextField @bind-Value="@Content.Lastname">Your lastname:</FluentTextField>
+<FluentNumberField @bind-Value="@Content.Age">Your age:</FluentNumberField> *@
+@* @if (Dialog != null)
+{
+    <FluentStack Orientation="Orientation.Vertical" Style="border: 1px solid red; padding: 10px">
+        <span>This section is visible only when component is hosted inside a Dialog</span>
+        <FluentButton OnClick="@(() => ToggleDialogPrimaryActionButton(true))">Enable Dialog Primary Action</FluentButton>
+        <FluentButton OnClick="@(() => ToggleDialogPrimaryActionButton(false))">Disable Dialog Primary Action</FluentButton>
+    </FluentStack>
+} *@
+
+@code {
+
+    public List<CatalogFeatureDto>? PrimaryCatalogFeatures { get; set; }
+
+    public CatalogFeatureDto? PrimaryCatalogFeature { get; set; }
+
+    public CatalogFeatureValueDto? PrimaryCatalogFeatureValue { get; set; }
+
+    public class CatalogFeatureResponse
+    {
+        public int CountSize { get; set; }
+        public int PageSize { get; set; }
+        public List<CatalogFeatureDto>? Data { get; set; }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var cts = new CancellationTokenSource();
+
+        try
+        {
+            var url = $"{Configuration["Endpoints:CatalogAPI"]}/api/primary-catalog/features?api-version={Configuration["Endpoints:ApiVersion"]}";
+            var response = await Http.GetFromJsonAsync<CatalogFeatureResponse>(url, cts.Token);
+
+            PrimaryCatalogFeatures = response!.Data;
+
+        }
+        catch (Exception ex)
+        {
+            // Log the error or display a message to the user
+            Console.WriteLine($"Error fetching catalog features: {ex.Message}");
+            PrimaryCatalogFeatures = new List<CatalogFeatureDto>();
+        }
+    }
+
+    [CascadingParameter]
+    public FluentDialog? Dialog { get; set; }
+
+
+    private bool _disabledButton = true;
+
+    private string? _featureId;
+    public required string FeatureId
+    {
+        get => _featureId!;
+        set
+        {
+            _featureId = value;
+            if (_featureId.Length > 0 && _featureValue?.Length > 0) _disabledButton = false;
+            else _disabledButton = true;
+        }
+    }
+
+    private string? _featureValue;
+    public string? FeatureValue
+    {
+        get => _featureValue;
+        set
+        {
+            _featureValue = value;
+            if (FeatureId.Length > 0 && _featureValue?.Length > 0) _disabledButton = false;
+            else _disabledButton = true;
+        }
+    }
+
+    private async void OnAddButtonClick()
+    {
+        //var content = new StringContent($"{{'Icon': '{_IconName}','Title': '{_FeatureTitle}' 'api-version': '1'}}", Encoding.UTF8, "application/json");
+        var url = $"{Configuration["Endpoints:CatalogAPI"]}/api/primary-catalog/catalog-features-values?api-version=1";
+        
+        PrimaryCatalogFeatureValue = new CatalogFeatureValueDto 
+        { 
+
+            PrimaryCatalogFeatureId = int.Parse(FeatureId),
+            PrimaryCatalogItemId = WebAppGlobalState.CatalogIdForFeature, 
+            Value = FeatureValue 
+        };
+        var json = JsonSerializer.Serialize(PrimaryCatalogFeatureValue);
+        Console.WriteLine(json);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        var response = await Http.PostAsync(url, content);
+        var result = await response.Content.ReadAsStringAsync();
+        Console.WriteLine(result);
+        await Dialog!.CloseAsync();         
+    }
+
+    private async void OnCancelButtonClick()
+    {
+        await Dialog!.CloseAsync();
+        // Dialog!.TogglePrimaryActionButton(enable);
+    }
+}

@@ -1,0 +1,236 @@
+﻿@page "/edit-product"
+@layout AdminLayout
+@attribute [Authorize(Roles = "Administrator")]
+@inject HttpClient Http
+@rendermode InteractiveServer   
+@inject NavigationManager NavManager
+@using Microsoft.Extensions.Configuration
+@using System.Text.Json
+@using System.Text.Json.Serialization
+@inject IConfiguration Configuration
+@using Microsoft.FluentUI.AspNetCore.Components
+@using System.Text
+@inject IDialogService DialogService
+@inject WebAppGlobalState WebAppGlobalState
+
+
+
+@if (CatalogItem != null)
+{
+
+
+    <FluentGrid Spacing="@Spacing" OnBreakpointEnter="@OnBreakpointEnterHandler" AdaptiveRendering="true" Justify="@Justification" Style=" ">
+        <FluentGridItem xs="12" sm="8">
+            <h3>Product : @CatalogItem?.OriginName</h3>
+            @*   <h5> Original Description:</h5>
+            <p>@CatalogItem?.Description</p> *@
+            <div class="card">
+                @if (CatalogItemVariants != null)
+                {
+                    <div>
+                        @foreach (var group in CatalogItemVariants)
+                        {
+                            <FluentGrid Spacing="@Spacing" OnBreakpointEnter="@OnBreakpointEnterHandler" AdaptiveRendering="true" Justify="@Justification" Style=" ">
+                                <FluentGridItem xs="12" sm="2">
+
+                                    <img style="display: block; max-width: 100%;" src="@(group.FirstOrDefault()?.variantImage)" />
+
+                                </FluentGridItem>
+
+                                <FluentGridItem xs="12" sm="2">
+                                    <FluentTextField Value=@group.FirstOrDefault()?.variantKey!.Split("-")[0] ValueChanged=@((string value) => KeyNameChanged(value, group)) Placeholder="Key Name"></FluentTextField>
+
+                                </FluentGridItem>
+                                <FluentGridItem xs="12" sm="8">
+                                    <div class="card-list-items">
+                                        @foreach (var variant in group)
+                                        {
+                                            <div class="card-list-item">
+                                                <span>
+                                                    @variant?.varianKeyAdjust!.Split("-")[1]
+
+                                                    @*  <FluentTextField @bind-Value=@variant!.VariantKeyValue Label="Variant Value"></FluentTextField> *@
+                                                    @*  <FluentTextField @bind-Value=@variant!.VariantKeyDE Label="Variant Key DE"></FluentTextField>  *@
+                                                </span>
+                                                <span> @variant?.variantFinallPrice?.ToString("C")</span>
+                                            </div>
+                                        }
+                                    </div>
+                                </FluentGridItem>
+                            </FluentGrid>
+                        }
+                    </div>
+                }
+            </div>
+          
+        </FluentGridItem>
+
+        <FluentGridItem xs="12" sm="4">
+            <div class="card">
+                <FluentGrid Spacing="@Spacing" OnBreakpointEnter="@OnBreakpointEnterHandler" AdaptiveRendering="true" Justify="@Justification" Style=" ">
+                    <FluentGridItem xs="12" sm="6">
+                        <FluentTextField @bind-Value=CatalogItem.Name Label="Product name"></FluentTextField>
+                    </FluentGridItem>
+                </FluentGrid>
+
+                <p>
+                    <FluentTextArea style="width: 100%;" Resize="TextAreaResize.Vertical" @bind-Value=CatalogItem.Description Label="Description" />
+                </p>
+
+                <div class="flex-center">
+                    <h5>Features: </h5> <FluentButton OnClick="OnAddFeatureButtonClick" Appearance="Appearance.Outline" style="margin-left: 10px">+</FluentButton>
+                </div>
+               
+
+
+                <FluentGrid Spacing="@Spacing" OnBreakpointEnter="@OnBreakpointEnterHandler" AdaptiveRendering="true" Justify="@Justification" Style=" ">
+                    <FluentGridItem xs="12" sm="6">
+                        <FluentTextField @bind-Value=CatalogItem.PackingName Label="Packing Name"></FluentTextField>
+                    </FluentGridItem>
+
+                    <FluentGridItem xs="12" sm="6">
+                        <FluentTextField @bind-Value=CatalogItem.ProductKey Label="Product Key"></FluentTextField>
+
+                    </FluentGridItem>
+
+
+
+                    <FluentGridItem xs="12" sm="6">
+                        <FluentTextField @bind-Value=CatalogItem.CategoryName Label="Category Name"></FluentTextField>
+                    </FluentGridItem>
+
+                </FluentGrid>
+              
+                <FluentButton OnClick="OnSaveButtonClick"> Save </FluentButton>
+                <FluentButton OnClick="OnArchiveButtonClick"> Archive  </FluentButton>
+            </div>
+        </FluentGridItem>
+        
+    </FluentGrid>
+}
+
+
+
+
+
+@code {
+
+    private IEnumerable<IGrouping<string, CatalogItemVariantDto>>? CatalogItemVariants { get; set; }
+
+    private CatalogItemDetailDto? CatalogItem { get; set; }
+
+    private CatalogItemVariantDto? CatalogItemVariant { get; set; }
+
+    JustifyContent Justification = JustifyContent.FlexStart;
+    int Spacing = 3;
+
+    void OnBreakpointEnterHandler(GridItemSize size)
+    {
+        Console.WriteLine($"Page Size: {size}");
+    }
+
+    public void KeyNameChanged(string value, IGrouping<string, CatalogItemVariantDto> group)
+    {
+
+        foreach (var variant in group)
+        {
+            variant.variantKeyName = value;
+        }
+
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Define the GridRowsDataProvider. Its job is to convert QuickGrid's GridRowsDataProviderRequest into a query against
+        // an arbitrary data soure. In this example, we need to translate query parameters into the particular URL format
+        // supported by the external JSON API. It's only possible to perform whatever sorting/filtering/etc is supported
+        // by the external API.
+
+        var baseUrl = new Uri(NavManager.Uri);
+
+        Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(baseUrl.Query).TryGetValue("id", out var id);
+
+        var url = $"{Configuration["Endpoints:CatalogAPI"]}/api/primary-catalog/items/{id}?api-version=1";
+
+        var response = await Http.GetFromJsonAsync<CatalogItemDetailDto>(url);
+
+        CatalogItem = response;
+
+
+        CatalogItemVariants = CatalogItem?.PrimaryCatalogItemVariants?.Where(item => item.variantKey != null).GroupBy(item => item.variantKey?.Split("-")[0] ?? "Unknown");
+        // Display the number of results just for information. This is completely separate from the grid.
+        // numResults = (await Http.GetFromJsonAsync<FoodRecallQueryResult>("https://api.fda.gov/food/enforcement.json"))!.Count;
+        Console.WriteLine(1234);
+    }
+
+    public async Task OnSaveButtonClick()
+    {
+        await UpdateProductAsync();
+    }
+
+    public async Task UpdateProductAsync()
+    {
+        var url = $"{Configuration["Endpoints:CatalogAPI"]}/api/catalog/items?api-version=1";
+        var json = JsonSerializer.Serialize(CatalogItem);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        var response = await Http.PutAsync(url, content);
+        // response.EnsureSuccessStatusCode();
+        var responseBody = await response.Content.ReadAsStringAsync();
+        Console.WriteLine(responseBody);
+    }
+
+    public async Task ArchiveProductAsync()
+    {
+        var url = $"{Configuration["Endpoints:CatalogAPI"]}/api/catalog/items?api-version=1";
+        var json = JsonSerializer.Serialize(CatalogItem);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        var response = await Http.DeleteAsync(url);
+    }
+
+    public async Task OnArchiveButtonClick()
+    {
+        await ArchiveProductAsync();
+    }
+
+
+    public async Task AddFeature()
+    {
+        var url = $"{Configuration["Endpoints:CatalogAPI"]}/api/catalog/items?api-version=1";
+        var json = JsonSerializer.Serialize(CatalogItem);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        var response = await Http.DeleteAsync(url);
+    }
+
+    public async Task OnAddFeatureButtonClick()
+    {
+        WebAppGlobalState.CatalogIdForFeature = CatalogItem!.Id;
+        await OpenDialogFeatureAsync();
+    }
+
+    private async Task OpenDialogFeatureAsync()
+    {
+        Console.WriteLine($"Open dialog centered");
+
+        DialogParameters parameters = new()
+        {
+            Title = "Value",
+            Width = "500px",
+            TrapFocus = true,
+            Modal = true,
+            PreventScroll = true,
+            
+
+        };
+
+
+
+        IDialogReference dialog = await DialogService.ShowDialogAsync<AddFeatureToProductDialog>(parameters);
+        DialogResult? result = await dialog.Result;
+
+
+        Console.WriteLine($"Dialog closed - Canceled: {result.Cancelled}");
+
+    }
+
+
+}

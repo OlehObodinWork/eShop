@@ -1,0 +1,8 @@
+﻿.card-list-items {
+    display: flex;
+    flex-flow: row wrap;
+}
+
+.card-list-item {
+    flex: 0 1 25%;
+}

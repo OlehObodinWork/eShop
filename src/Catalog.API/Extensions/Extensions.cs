@@ -1,4 +1,5 @@
-﻿using eShop.Catalog.API.Services;
+﻿using Catalog.API.Services;
+using eShop.Catalog.API.Services;
 using Microsoft.Extensions.AI;
 using OllamaSharp;
 using OpenAI;
@@ -50,5 +51,8 @@ public static class Extensions
         }
 
         builder.Services.AddScoped<ICatalogAI, CatalogAI>();
+        builder.Services.AddScoped<IPrimaryCatalogAI, PrimaryCatalogAI>();
+        builder.Services.AddScoped<CJCatalog>();
+        builder.Services.AddScoped<TokenService>();
     }
 }

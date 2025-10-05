@@ -2,12 +2,14 @@
 using eShop.WebApp;
 using eShop.WebApp.Services.OrderStatus.IntegrationEvents;
 using eShop.WebAppComponents.Services;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server;
 using Microsoft.Extensions.AI;
 using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.IdentityModel.Tokens;
 using OllamaSharp;
 using OpenAI;
 
@@ -29,6 +31,7 @@ public static class Extensions
         builder.Services.AddSingleton<OrderStatusNotificationService>();
         builder.Services.AddSingleton<ThemeState>();
         builder.Services.AddSingleton<IProductImageUrlProvider, ProductImageUrlProvider>();
+        builder.Services.AddSingleton<WebAppGlobalState>();
         builder.AddAIServices();
 
         // HTTP and GRPC client registrations
@@ -66,7 +69,6 @@ public static class Extensions
         var sessionCookieLifetime = configuration.GetValue("SessionCookieLifetimeMinutes", 60);
 
         // Add Authentication services
-        services.AddAuthorization();
         services.AddAuthentication(options =>
         {
             options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -88,6 +90,8 @@ public static class Extensions
             options.Scope.Add("profile");
             options.Scope.Add("orders");
             options.Scope.Add("basket");
+            options.TokenValidationParameters.RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
+
         });
 
         // Blazor auth services
