@@ -1,0 +1,35 @@
+﻿.admin-nav {
+    list-style-type: none;
+    padding: 0;
+    padding-top: 16px;
+}
+
+.admin-nav li {
+    padding: 8px 8px;
+}
+
+.admin-nav a {
+    color: rgb(128, 128, 128);
+    cursor: pointer;
+
+}
+
+
+.admin-nav a:hover {
+
+}
+
+.admin-nav-title {
+    padding-left: 12px;
+}
+
+.fa-solid {
+    width: 20px;
+}
+
+
+.admin-nav-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
