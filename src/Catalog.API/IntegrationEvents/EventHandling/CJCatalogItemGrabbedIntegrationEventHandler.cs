@@ -11,6 +11,7 @@ namespace eShop.Catalog.API.IntegrationEvents.EventHandling
     public class CJCatalogItemGrabbedIntegrationEventHandler(
         CatalogContext catalogContext,
         IPrimaryCatalogAI primaryCatalogAI,
+        HttpClient httpClient,
         ILogger<CJCatalogItemGrabbedIntegrationEventHandler> logger
     ) :IIntegrationEventHandler<CJCatalogItemGrabbedIntegrationEvent>
     {
@@ -59,12 +60,22 @@ namespace eShop.Catalog.API.IntegrationEvents.EventHandling
                     }
                 }
 
-                foreach (var variant in primaryCatalogItem.PrimaryCatalogItemVariants)
+                foreach (PrimaryCatalogItemVariant variant in primaryCatalogItem.PrimaryCatalogItemVariants)
                 {
+                   
+               
+                    var endpoint = $"http://localhost:7000/api/remove_upload?url={variant.VariantImageOrigin}";
+                    var response = await httpClient.GetAsync(endpoint);
+                    response.EnsureSuccessStatusCode();
+                    var imageUrl = await response.Content.ReadAsStringAsync();
+                    variant.VarianImageEnhanced = imageUrl;
+
+
                     variant.PrimaryCatalogItemId = primaryCatalogItem.Id;
                     variant.VarianPriceAdjustments();
                     variant.VarianKeyAdjusted();
                     catalogContext.PrimaryCatalogItemVariants.Add(variant);
+                    Console.WriteLine($"{@variant}");
                 }
 
                 foreach (var image in primaryCatalogItem.PrimaryCatalogOriginalImages)
