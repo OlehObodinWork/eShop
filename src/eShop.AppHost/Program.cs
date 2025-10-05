@@ -71,7 +71,7 @@ var orderingApi = builder.AddProject<Projects.Ordering_API>("ordering-api")
     .WithReference(orderDb).WaitFor(orderDb)
     .WithHttpHealthCheck("/health")
     .WithEnvironment("Identity__Url", identityEndpoint)
-     .WaitFor(postgres);
+    .WaitFor(postgres);
 
 builder.AddProject<Projects.OrderProcessor>("order-processor")
     .WithReference(rabbitMq).WaitFor(rabbitMq)
@@ -85,7 +85,8 @@ builder.AddProject<Projects.PaymentProcessor>("payment-processor")
 var webHooksApi = builder.AddProject<Projects.Webhooks_API>("webhooks-api")
     .WithReference(rabbitMq).WaitFor(rabbitMq)
     .WithReference(webhooksDb)
-    .WithEnvironment("Identity__Url", identityEndpoint);
+    .WithEnvironment("Identity__Url", identityEndpoint)
+    .WaitFor(postgres);
 
 // Reverse proxies
 builder.AddProject<Projects.Mobile_Bff_Shopping>("mobile-bff")
@@ -136,6 +137,10 @@ identityApi.WithEnvironment("BasketApiClient", basketApi.GetEndpoint("http"))
 // Starting in Aspire 9.2, we can use the new DockerComposePublisher to generate a docker-compose file.
 // In order to do so, run 'dotnet run --publisher docker-compose --output-path ./docker-compose' to try it out.
 builder.AddDockerComposePublisher();
+  
+builder.AddProject<Projects.CJDropship_API>("cjdropship-api")
+    .WithReference(rabbitMq).WaitFor(rabbitMq);
+
 
 builder.Build().Run();
 
