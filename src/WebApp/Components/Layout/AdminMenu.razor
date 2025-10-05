@@ -30,12 +30,12 @@
         <FluentMenuItem Id="AddFeature">Feature</FluentMenuItem>
     </FluentMenuButton>
     <nav>
-        <ul>
+        <ul class="admin-nav">
             <li>
-                <a @onclick='() => OnNavClick("/products")'>Products</a>
+				<a class="admin-nav-link" @onclick='() => OnNavClick("/products")'> <span class="fa-solid fa-box fa-lg"></span> <span class="admin-nav-title">Products </span></a>
             </li>
             <li>
-                <a @onclick='() => OnNavClick("/features")'>Features</a>
+				<a class="admin-nav-link" @onclick='() => OnNavClick("/features")'> <span class="fa-solid fa-cogs fa-lg"></span> <span class="admin-nav-title">Features  </span></a>
             </li>
         </ul>
 

@@ -11,7 +11,8 @@
 @inject IConfiguration Configuration
 
 <div style="height: 434px; overflow:auto;" tabindex="-1">
-    <FluentDataGrid style="height: 100%;" ItemsProvider="foodRecallProvider" OnRowClick="@(OnRowClick)" Virtualize="true" ItemSize="46" GenerateHeader="GenerateHeaderOption.Sticky" TGridItem="CatalogItemTest">
+    <FluentDataGrid 
+		ItemsProvider="foodRecallProvider" OnRowClick="@(OnRowClick)" Virtualize="true" ItemSize="46" GenerateHeader="GenerateHeaderOption.Sticky" TGridItem="CatalogItemTest">
         <PropertyColumn Title="ID" Property="@(c => c!.Id)" />
         @*   <PropertyColumn Property="@(c => c!.State)" Style="color: #af5f00 ;" />
         <PropertyColumn Property="@(c => c!.City)" />
