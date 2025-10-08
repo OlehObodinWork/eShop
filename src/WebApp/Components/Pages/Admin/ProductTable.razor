@@ -22,8 +22,8 @@
 			@* <FluentButton aria-label="Delete item" OnClick="@(() => Console.WriteLine("Delete clicked"))" /> *@
 		</TemplateColumn>
 		<PropertyColumn Property="@(c => c!.OriginName)" Style="" />
-	
-		@*  <PropertyColumn Title="Company" Property="@(c => c!.Recalling_Firm)" Tooltip="true" />
+		<PropertyColumn Title="SKU" Property="@(c => c!.ProductSku)" Tooltip="true" />
+		@*  
 
 		<TemplateColumn Title="Actions" Align="@Align.End">
             <FluentButton aria-label="Edit item"  OnClick="@(() => Console.WriteLine("Edit clicked"))" />

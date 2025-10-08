@@ -29,9 +29,14 @@ public class PrimaryCatalogItemDto
     public string? Name { get; set; }
     public string? Description { get; set; }
     public string? ProductName { get; set; }
+
+    [JsonPropertyName("packingName")]
     public string? PackingName { get; set; }
     public string? ProductKey { get; set; }
     public string? CategoryName { get; set; }
+
+    [JsonPropertyName("productSku")]
+    public string? ProductSku { get; set; }
 
     public List<CatalogItemVariantDto>? PrimaryCatalogItemVariants { get; set; }
 }

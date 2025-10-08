@@ -1581,7 +1581,7 @@
             "format": "int32"
           },
           "primaryCatalogItem": {
-            "$ref": "#/components/schemas/PrimaryCatalogItem2"
+            "$ref": "#/components/schemas/PrimaryCatalogItem"
           }
         }
       },
@@ -1600,7 +1600,7 @@
             "format": "int32"
           },
           "primaryCatalogItem": {
-            "$ref": "#/components/schemas/PrimaryCatalogItem2"
+            "$ref": "#/components/schemas/PrimaryCatalogItem"
           }
         }
       },
