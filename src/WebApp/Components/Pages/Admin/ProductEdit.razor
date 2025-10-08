@@ -114,8 +114,8 @@
 
                 </FluentGrid>
               
-                <FluentButton OnClick="OnSaveButtonClick"> Save </FluentButton>
-                <FluentButton OnClick="OnArchiveButtonClick"> Archive  </FluentButton>
+				<FluentButton OnClick="OnSaveButtonClick" Appearance="Appearance.Accent"> Save </FluentButton>
+               @*  <FluentButton OnClick="OnArchiveButtonClick"> Archive  </FluentButton> *@
             </div>
         </FluentGridItem>
         
@@ -130,7 +130,7 @@
 
 	private IEnumerable<IGrouping<string, CatalogItemVariantDto>>? CatalogItemVariants { get; set; }
 
-	private CatalogItemDetailDto? CatalogItem { get; set; }
+	private PrimaryCatalogItemDto? CatalogItem { get; set; }
 
 	private CatalogItemVariantDto? CatalogItemVariant { get; set; }
 
@@ -167,7 +167,7 @@
 
 		var url = $"{Configuration["Endpoints:CatalogAPI"]}/api/primary-catalog/items/{id}?api-version=1";
 
-		var response = await Http.GetFromJsonAsync<CatalogItemDetailDto>(url);
+		var response = await Http.GetFromJsonAsync<PrimaryCatalogItemDto>(url);
 
 		CatalogItem = response;
 

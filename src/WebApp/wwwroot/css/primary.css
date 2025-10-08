@@ -164,7 +164,7 @@ h1:focus {
 /* Shadow dom part */
 
 fluent-text-area::part(control) {
-    height: 400px;
+    height: 260px;
 }
 
 fluent-tabs {
@@ -242,3 +242,7 @@ body {
   
 }
 
+
+.primary-catalog-items-table td {
+    cursor: pointer
+}

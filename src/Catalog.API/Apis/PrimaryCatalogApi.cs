@@ -59,6 +59,7 @@ public static class PrimaryCatalogApi
 
         var itemsOnPage = await services.Context.PrimaryCatalogItems
             .OrderBy(c => c.Name)
+            .Include(c => c.PrimaryCatalogItemVariants)
             .Skip(pageSize * pageIndex)
             .Take(pageSize)
             .ToListAsync();

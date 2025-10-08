@@ -11,24 +11,34 @@
 @inject IConfiguration Configuration
 
 <div style="height: 434px; overflow:auto;" tabindex="-1">
-    <FluentDataGrid 
-		ItemsProvider="foodRecallProvider" OnRowClick="@(OnRowClick)" Virtualize="true" ItemSize="46" GenerateHeader="GenerateHeaderOption.Sticky" TGridItem="CatalogItemTest">
-        <PropertyColumn Title="ID" Property="@(c => c!.Id)" />
-        @*   <PropertyColumn Property="@(c => c!.State)" Style="color: #af5f00 ;" />
-        <PropertyColumn Property="@(c => c!.City)" />
-        <PropertyColumn Title="Company" Property="@(c => c!.Recalling_Firm)" Tooltip="true" />
-        <PropertyColumn Property="@(c => c!.Status)" />
-        <TemplateColumn Title="Actions" Align="@Align.End">
+	<FluentDataGrid  Class="primary-catalog-items-table" ItemsProvider="primaryCatalogItemsProvider" OnRowClick="@(OnRowClick)" Virtualize="true" ItemSize="46" GenerateHeader="GenerateHeaderOption.Sticky" TGridItem="PrimaryCatalogItemDto">
+        <PropertyColumn Title="ID" Property="@(c => c!.Id)" Width="64px" />
+		<TemplateColumn Title="" Align="@Align.Start" Width="88px">
+			@if (@GetVariantImageEnhanced(@context) != null)
+			{
+				<img src="@GetVariantImageEnhanced(@context)" style=" height: 100%; object-fit:contain" />
+			}
+		
+			@* <FluentButton aria-label="Delete item" OnClick="@(() => Console.WriteLine("Delete clicked"))" /> *@
+		</TemplateColumn>
+		<PropertyColumn Property="@(c => c!.OriginName)" Style="" />
+	
+		@*  <PropertyColumn Title="Company" Property="@(c => c!.Recalling_Firm)" Tooltip="true" />
+
+		<TemplateColumn Title="Actions" Align="@Align.End">
             <FluentButton aria-label="Edit item"  OnClick="@(() => Console.WriteLine("Edit clicked"))" />
             <FluentButton aria-label="Delete item" OnClick="@(() => Console.WriteLine("Delete clicked"))" />
         </TemplateColumn> *@
+      @*   <PropertyColumn Property="@(c => c!.Status)" /> *@
+        
     </FluentDataGrid>
+	
 </div>
 
 @* <p>Total: <strong>@numResults results found</strong></p> *@
 
 @code {
-    GridItemsProvider<CatalogItemTest> foodRecallProvider = default!;
+	GridItemsProvider<PrimaryCatalogItemDto> primaryCatalogItemsProvider = default!;
 
 
     protected override void OnInitialized()
@@ -38,7 +48,7 @@
         // an arbitrary data sourсe. In this example, we need to translate query parameters into the particular URL format
         // supported by the external JSON API. It's only possible to perform whatever sorting/filtering/etc is supported
         // by the external API.
-        foodRecallProvider = async req =>
+		primaryCatalogItemsProvider = async req =>
         {
             // var url = NavManager.GetUriWithQueryParameters("https://api.fda.gov/food/enforcement.json", new Dictionary<string, object?>
             //             {
@@ -49,7 +59,7 @@
 
             var url = $"{Configuration["Endpoints:CatalogAPI"]}/api/primary-catalog/items?api-version=1";
 
-            var response = await Http.GetFromJsonAsync<FoodRecallQueryResult>(url, req.CancellationToken);
+			var response = await Http.GetFromJsonAsync<PrimaryCatlogItemQueryResult>(url, req.CancellationToken);
 
             return GridItemsProviderResult.From(
                 items: response!.Data,
@@ -60,7 +70,7 @@
         // numResults = (await Http.GetFromJsonAsync<FoodRecallQueryResult>("https://api.fda.gov/food/enforcement.json"))!.Count;
     }
 
-    public void OnRowClick(FluentDataGridRow<CatalogItemTest> context)
+	public void OnRowClick(FluentDataGridRow<PrimaryCatalogItemDto> context)
     {
 
         if (context.Item != null) {
@@ -71,22 +81,13 @@
         }
     }
 
-    public class FoodRecall
-    {
-        public string? Event_Id { get; set; }
-        public string? State { get; set; }
-        public string? City { get; set; }
-        public string? Recalling_Firm { get; set; }
-        public string? Status { get; set; }
-    }
-
-    public class FoodRecallQueryResult
+    public class PrimaryCatlogItemQueryResult
     {
 
         public int Count { get; set; }
         public int PageSize { get; set; }
         
-        required public List<CatalogItemTest> Data { get; set; }
+		required public List<PrimaryCatalogItemDto> Data { get; set; }
     }
 
     public class MetaData
@@ -98,5 +99,14 @@
     {
         public int Total { get; set; }
     }
+
+
+	public static string? GetVariantImageEnhanced(PrimaryCatalogItemDto c)
+	{
+		return c?.PrimaryCatalogItemVariants != null
+			? c.PrimaryCatalogItemVariants.FirstOrDefault()?.varianImageEnhanced
+			: null;
+	}
+
 
 }

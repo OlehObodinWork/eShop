@@ -21,7 +21,7 @@ public class CatalogItemTest
     public int Id { get; set; }
 }
 
-public class CatalogItemDetailDto
+public class PrimaryCatalogItemDto
 {
     public int Id { get; set; }
     [JsonPropertyName("productNameEn")]

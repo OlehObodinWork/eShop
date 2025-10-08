@@ -11,7 +11,7 @@
 @* <p>Your lastname is @Content.Lastname and you are @Content.Age years young </p> *@
 
 <FluentTextField @bind-Value="@SKU" Label="Add" Immediate="true"></FluentTextField>
-<FluentTextField @bind-Value=value2 Label="Label"></FluentTextField>
+
 <FluentDialogFooter>
     <FluentButton Appearance="Appearance.Accent"  Disabled=@_disabledButton OnClick="OnAddButtonClick">Add</FluentButton>
     <FluentButton Appearance="Appearance.Neutral" OnClick="OnCancelButtonClick">Cancel</FluentButton>
@@ -35,7 +35,7 @@
     [CascadingParameter]
     public FluentDialog? Dialog { get; set; }
 
-    string? value2;
+    
     private string? _SKU;
     private bool _disabledButton = true;
     public string? SKU { 

@@ -922,19 +922,8 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
-        },
-        "security": [
-          {
-            "oauth2": [ ]
-          }
-        ]
+        }
       },
       "post": {
         "tags": [
@@ -964,19 +953,8 @@
         "responses": {
           "201": {
             "description": "Created"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
-        },
-        "security": [
-          {
-            "oauth2": [ ]
-          }
-        ]
+        }
       }
     },
     "/api/primary-catalog/items/by": {
@@ -1107,19 +1085,8 @@
           },
           "404": {
             "description": "Not Found"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
-        },
-        "security": [
-          {
-            "oauth2": [ ]
-          }
-        ]
+        }
       }
     },
     "/api/primary-catalog/items/by/{name}": {
@@ -1443,19 +1410,8 @@
         "responses": {
           "201": {
             "description": "Created"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
-        },
-        "security": [
-          {
-            "oauth2": [ ]
-          }
-        ]
+        }
       },
       "get": {
         "tags": [
@@ -1513,22 +1469,11 @@
                 }
               }
             }
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
-        },
-        "security": [
-          {
-            "oauth2": [ ]
-          }
-        ]
+        }
       }
     },
-    "/api/primary-catalog/catalog-features-values/{catalogId}": {
+    "/api/primary-catalog/catalog-features-values": {
       "post": {
         "tags": [
           "PrimaryCatalog"
@@ -1557,19 +1502,8 @@
         "responses": {
           "201": {
             "description": "Created"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "403": {
-            "description": "Forbidden"
           }
-        },
-        "security": [
-          {
-            "oauth2": [ ]
-          }
-        ]
+        }
       },
       "get": {
         "tags": [
@@ -1604,7 +1538,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/PrimaryCatalogFeatureValue"
+                    "$ref": "#/components/schemas/FeatureValueDto"
                   }
                 }
               }
@@ -1713,6 +1647,28 @@
           "type": {
             "type": "string",
             "nullable": true
+          }
+        }
+      },
+      "FeatureValueDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "value": {
+            "type": "string"
+          },
+          "featureId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "featureTitle": {
+            "type": "string"
+          },
+          "featureIcon": {
+            "type": "string"
           }
         }
       },
