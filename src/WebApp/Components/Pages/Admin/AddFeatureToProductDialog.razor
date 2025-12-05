@@ -48,7 +48,7 @@
 
     public CatalogFeatureDto? PrimaryCatalogFeature { get; set; }
 
-	public PrimaryCatalogItemFeaturesValueDTO? PrimaryCatalogFeatureValue { get; set; }
+	public PrimaryFeatureValueDto? PrimaryCatalogFeatureValue { get; set; }
 
     public class CatalogFeatureResponse
     {
@@ -112,11 +112,11 @@
         //var content = new StringContent($"{{'Icon': '{_IconName}','Title': '{_FeatureTitle}' 'api-version': '1'}}", Encoding.UTF8, "application/json");
 		var url = $"{Configuration["Endpoints:CatalogAPI"]}/api/primary-catalog/catalog-features-values?api-version={Configuration["Endpoints:ApiVersion"]}";
         
-		PrimaryCatalogFeatureValue = new PrimaryCatalogItemFeaturesValueDTO
+		PrimaryCatalogFeatureValue = new PrimaryFeatureValueDto
         { 
 
-            PrimaryCatalogFeatureId = int.Parse(FeatureId.Split(" ")[0]),
-            PrimaryCatalogItemId = WebAppGlobalState.CatalogIdForFeature, 
+			PrimaryCatalogFeatureId = int.Parse(FeatureId.Split(" ")[0]),
+			PrimaryCatalogItemId = WebAppGlobalState.CatalogIdForFeature,
             Value = FeatureValue 
         };
         var json = JsonSerializer.Serialize(PrimaryCatalogFeatureValue);

@@ -1,4 +1,4 @@
-﻿@page "/edit-product"
+﻿@page "/edit-product/{ItemId:int}"
 @layout AdminLayout
 @attribute [Authorize(Roles = "Administrator")]
 @inject HttpClient Http
@@ -10,8 +10,10 @@
 @inject IConfiguration Configuration
 @using Microsoft.FluentUI.AspNetCore.Components
 @using System.Text
+@using eShop.WebApp.Components.UI
 @inject IDialogService DialogService
 @inject WebAppGlobalState WebAppGlobalState
+@inject GetPrimaryCatalogItem CatalogItemService
 
 
 
@@ -83,15 +85,9 @@
                
 				@if (FeatureValues != null && FeatureValues.Count() > 0)
 				{
-					<div class="list-features">
-						@foreach (var feature in FeatureValues!)
-						{   <div>
-								<span class="fa-solid @feature.FeatureIcon"></span>
-								<span>@feature.FeatureTitle</span>
-								<span>@feature.Value</span>
-							</div>
-						}
-					</div>
+					<h3>Features</h3>
+					<Features FeatureValues="FeatureValues"></Features>
+					
 				}
 				
 
@@ -132,12 +128,17 @@
 
 	private PrimaryCatalogItemDto? CatalogItem { get; set; }
 
+	[Parameter]
+	public int ItemId { get; set; }
+
 	private CatalogItemVariantDto? CatalogItemVariant { get; set; }
 
-	private List<FeatureValueDto>? FeatureValues { get; set; }
+	private List<PrimaryFeatureValueDto>? FeatureValues { get; set; }
 
 	JustifyContent Justification = JustifyContent.FlexStart;
 	int Spacing = 3;
+
+	System.Uri baseUrl => new Uri(NavManager.Uri);
 
 	void OnBreakpointEnterHandler(GridItemSize size)
 	{
@@ -160,25 +161,17 @@
 		// an arbitrary data soure. In this example, we need to translate query parameters into the particular URL format
 		// supported by the external JSON API. It's only possible to perform whatever sorting/filtering/etc is supported
 		// by the external API.
-
-		var baseUrl = new Uri(NavManager.Uri);
-
-		Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(baseUrl.Query).TryGetValue("id", out var id);
-
-		var url = $"{Configuration["Endpoints:CatalogAPI"]}/api/primary-catalog/items/{id}?api-version=1";
-
-		var response = await Http.GetFromJsonAsync<PrimaryCatalogItemDto>(url);
-
-		CatalogItem = response;
-
-
-		CatalogItemVariants = CatalogItem?.PrimaryCatalogItemVariants?.Where(item => item.variantKey != null).GroupBy(item => item.variantKey?.Split("-")[0] ?? "Unknown");
+		var (item, variants) = await CatalogItemService.GetPrimaryCatalogItems(baseUrl);
+		CatalogItem = item;
+		CatalogItemVariants = variants;
 		// Display the number of results just for information. This is completely separate from the grid.
 		// numResults = (await Http.GetFromJsonAsync<FoodRecallQueryResult>("https://api.fda.gov/food/enforcement.json"))!.Count;
-		Console.WriteLine(1234);
-
-		await GetPrimaryCatalogItemFeaturesValue();
+		ItemId = CatalogItem!.Id;
+		FeatureValues = await CatalogItemService.GetPrimaryCatalogItemFeaturesValue(CatalogItem!.Id);
 	}
+
+
+	
 
 	public async Task OnSaveButtonClick()
 	{
@@ -218,20 +211,7 @@
 		var response = await Http.DeleteAsync(url);
 	}
 
-	public async Task GetPrimaryCatalogItemFeaturesValue()
-	{
-		var url = $"{Configuration["Endpoints:CatalogAPI"]}/api/primary-catalog/catalog-features-values?id={CatalogItem!.Id}&api-version=1";
-		var response = await Http.GetAsync(url);
-		if (!response.IsSuccessStatusCode)
-			throw new HttpRequestException($"Request failed with status code {response.StatusCode}");
-
-		var json = await response.Content.ReadAsStringAsync();
-		FeatureValues = JsonSerializer.Deserialize<List<FeatureValueDto>>(json, new JsonSerializerOptions
-		{
-			PropertyNameCaseInsensitive = true
-		});
-
-	}
+	
 
 
     public async Task OnAddFeatureButtonClick()

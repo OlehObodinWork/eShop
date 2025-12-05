@@ -74,7 +74,7 @@
     {
 
         if (context.Item != null) {
-            NavManager.NavigateTo($"/edit-product?id={context.Item.Id}");
+            NavManager.NavigateTo($"/edit-product/{context.Item.Id}");
         } else
         {
             Console.WriteLine("Item is null");    

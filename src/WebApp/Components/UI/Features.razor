@@ -1,0 +1,23 @@
+﻿
+@if (FeatureValues != null && FeatureValues.Count() > 0)
+{
+	<div class="list-features">
+		@foreach (var feature in FeatureValues!)
+		{
+			<div class="list-features-item">
+				<div class="fa-solid @feature.FeatureIcon list-features-icon"></div>
+				<div>
+					<span class="list-features-title">@feature.FeatureTitle</span>
+					<span>@feature.Value</span>
+				</div>
+			</div>
+		}
+	</div>
+}
+
+
+
+@code {
+	[Parameter]
+	public List<PrimaryFeatureValueDto>? FeatureValues { get; set; }
+}

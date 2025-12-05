@@ -1,0 +1,29 @@
+﻿
+.list-features {
+    display: flex;
+}
+
+.list-features-item {
+    padding: 6px 14px;
+    background: linear-gradient(to right, rgba(0, 0, 0, .2), rgba(0, 0, 0, .4), rgba(0, 0, 0, .2));
+    margin-right: 18px;
+    width: 33%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+    .list-features-item:last-child {
+        margin-right: 0;
+    }
+
+.list-features-icon {
+    margin-right: 8px;
+    font-size: 22px;
+}
+
+.list-features-title {
+    color: var(--presence-offline);
+    display: block;
+}
