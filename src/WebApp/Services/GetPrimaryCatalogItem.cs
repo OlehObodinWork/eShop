@@ -43,6 +43,11 @@ namespace eShop.WebApp.Services
             
         }
 
+        public void GroupByVariantKey()
+        {
+
+        }
+
         public async Task<List<PrimaryFeatureValueDto>?> GetPrimaryCatalogItemFeaturesValue(int? itemId)
         {
             var url = $"{_configuration["Endpoints:CatalogAPI"]}/api/primary-catalog/catalog-features-values?id={itemId}&api-version=1";

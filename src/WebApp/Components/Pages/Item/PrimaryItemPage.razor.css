@@ -75,3 +75,19 @@ a {
 }
 
 
+.description {
+    padding-top: 24px;
+    padding-bottom: 48px;
+}
+
+.custom-button {
+    margin: 36px 0;
+}
+
+
+.typeitem:checked ~ img {
+    box-shadow: inset -2px 2px 2px #55FA8980,inset 2px -2px 2px #7ac8fb4d;
+}
+.typeitem-img {
+    padding: 9px;
+}
